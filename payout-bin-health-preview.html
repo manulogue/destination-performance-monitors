@@ -1,0 +1,703 @@
+
+<style id="preview-banner-css">
+#preview-banner{position:fixed;left:0;right:0;bottom:0;z-index:99999;
+ background:#1c1917;color:#fafaf9;font:500 12px/1.5 ui-sans-serif,system-ui,sans-serif;
+ padding:8px 14px;text-align:center;letter-spacing:.02em;
+ border-top:2px solid #f59e0b;box-shadow:0 -2px 12px rgba(0,0,0,.25)}
+#preview-banner b{color:#fbbf24}
+</style>
+<!-- ============================================================================
+     PAYOUT BIN DASHBOARD — MODE edition. Reads its rows LIVE from the Mode `datasets`
+     global (no Python, no snapshot). Pair it with the query in payout_bin_mode.sql:
+       - In Mode, add payout_bin_mode.sql as a SQL query, named so it's discoverable
+         (contains "bin", "payout", or "fire" - e.g. "Payout BIN fire list").
+       - Add THIS file as an HTML cell in the same report. It auto-reads the query result
+         via `datasets` (rows-as-objects or rows-as-arrays+columns), coerces numeric
+         strings, and parses the `errors` JSON column. Refreshes when the query does.
+     Standalone fallback: window.ROWS=[...] or paste JSON into #dpa-data.
+============================================================================ -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payout BIN · Sudden-Drop Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Remitly Forest Green #2E7D46 (anchor) + supporting greens */
+    --brand:#2E7D46;
+    --brand-bright:#43B36B;
+    --lilac:#A9DCB8;        /* light sage accent (was indigo lilac) */
+    --bg:#10321F;           /* deep pine */
+    --ink:#0C2016;          /* near-black green */
+    --surface:#FCFEFB;
+    --muted:#5F7268;
+    /* semantic (delivery health / alarm state) — kept for contrast against green */
+    --red:#F0495A;
+    --amber:#F7B32B;
+    --green:#1FC77D;
+    --bubbly:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;      /* body */
+    --head:'Bungee','Barlow',cursive;                                      /* BIN CHECKUP */
+    --sub:'Barlow Condensed','Barlow',sans-serif;                          /* labels / subheads */
+    --shadow:10px 10px 0 rgba(6,20,12,.55);
+    --shadow-lg:16px 16px 0 rgba(6,20,12,.5);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+  body{
+    font-family:var(--bubbly);color:#fff;min-height:100vh;overflow-x:hidden;
+    padding:clamp(16px,3.5vw,48px);
+    background:
+      radial-gradient(900px 620px at 8% -6%, rgba(46,125,70,.54), transparent 60%),
+      radial-gradient(820px 640px at 100% -4%, rgba(67,179,107,.36), transparent 55%),
+      radial-gradient(1000px 820px at 50% 122%, rgba(169,220,184,.24), transparent 55%),
+      linear-gradient(rgba(120,170,140,.05) 3px, transparent 3px) 0 0 / 26px 26px,
+      linear-gradient(90deg, rgba(120,170,140,.05) 3px, transparent 3px) 0 0 / 26px 26px,
+      var(--bg);
+    background-attachment:fixed;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;max-width:1220px;margin:0 auto clamp(14px,2vw,22px)}
+  .kicker{
+    display:inline-block;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    font-size:clamp(11px,1.3vw,14px);color:#fff;background:var(--brand);
+    padding:8px 15px;border-radius:999px;transform:rotate(-2deg);
+  }
+  h1{font-family:var(--head);font-weight:400;line-height:1.04;font-size:clamp(46px,9.4vw,120px);letter-spacing:-.02em;margin:.2em 0 .16em;display:block;width:fit-content;max-width:100%;position:relative;color:#fff;text-shadow:none}
+  h1 .a,h1 .b{position:relative}
+  h1 .a{color:#fff;-webkit-text-fill-color:#fff}
+  h1 .b{background:linear-gradient(96deg,#ffffff 0%,#CDEBD6 50%,#43B36B 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+  h1 .a::before{content:"BIN";position:absolute;left:8px;top:10px;z-index:-1;pointer-events:none;
+     -webkit-text-stroke:7px #08160E;color:#08160E;-webkit-text-fill-color:#08160E}
+  h1 .b::before{content:"CHECKUP";position:absolute;left:8px;top:10px;z-index:-1;pointer-events:none;
+     -webkit-text-stroke:7px transparent;
+     background:linear-gradient(96deg,#123A24 0%,#2E7D46 52%,#BFE8CC 100%);
+     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+  .sub{font-weight:600;font-size:clamp(15px,2vw,23px);max-width:46ch;line-height:1.16;color:#DDEFE3;margin-left:calc(clamp(46px,9.4vw,120px)*.0625)}
+  .sub b{color:var(--lilac)}
+  .snap{margin-top:8px;font-weight:600;font-size:13px;color:#9DBCA8}
+  .snap code{background:rgba(255,255,255,.1);padding:1px 8px;border-radius:7px;font-family:ui-monospace,Menlo,Consolas,monospace}
+  .pills{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+  .pill{display:flex;flex-direction:column;gap:2px;min-width:130px;background:rgba(255,255,255,.06);border:3px solid rgba(255,255,255,.14);border-radius:20px;padding:11px 18px}
+  .pill .n{font-weight:800;font-size:clamp(24px,3.2vw,38px);line-height:1}
+  .pill .k{font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#AFCBBB}
+  .pill.on .n{color:var(--red)} .pill.re .n{color:var(--amber)} .pill.im .n{color:var(--lilac)}
+
+  /* ---------- METHOD / how to read this ---------- */
+  details.method{
+    max-width:1220px;margin:clamp(16px,2.2vw,24px) auto 0;background:rgba(255,255,255,.12);
+    border:3px solid rgba(169,220,184,.3);border-radius:22px;overflow:hidden;
+  }
+  details.method>summary{
+    cursor:pointer;list-style:none;padding:16px 22px;font-weight:600;font-size:clamp(15px,2vw,23px);text-transform:lowercase;
+    color:#fff;display:flex;align-items:center;gap:10px;user-select:none;
+  }
+  details.method>summary::-webkit-details-marker{display:none}
+  details.method>summary .mk{color:var(--lilac);transition:transform .2s}
+  details.method[open]>summary .mk{transform:rotate(90deg)}
+  details.method>summary .tagline{font-weight:600;font-size:13px;color:#A7C4B4;margin-left:auto}
+  details.method>summary .howtxt{-webkit-text-stroke:0;text-transform:lowercase}
+  .method-body{padding:2px 22px 22px;color:#DDEFE3;font-weight:500;font-size:14.5px;line-height:1.5}
+  .method-body h4{font-weight:800;font-size:13.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--lilac);margin:16px 0 6px}
+  .method-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 26px}
+  @media (max-width:760px){.method-grid{grid-template-columns:1fr}}
+  .method-body b{color:#fff}
+  .mrow{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+  .mrow .term{font-weight:800;color:#fff}
+  .tierdef{display:flex;gap:9px;align-items:flex-start;padding:5px 0}
+  .tierdef .badge{flex:0 0 auto;font-weight:800;font-size:11px;letter-spacing:.04em;color:#fff;background:var(--brand);padding:4px 10px;border-radius:999px;margin-top:1px}
+  .tierdef .badge.na{background:#8AA596}
+
+  /* ---------- TABS ---------- */
+  .tabs{display:flex;align-items:center;gap:14px;max-width:1220px;margin:clamp(16px,2.2vw,24px) auto clamp(12px,1.8vw,20px);flex-wrap:wrap}
+  .tab{
+    cursor:pointer;font-weight:800;font-size:clamp(15px,1.9vw,21px);color:#0C2016;border:4px solid #0C2016;
+    border-radius:999px;padding:11px 22px;box-shadow:6px 6px 0 rgba(6,20,12,.5);transform:rotate(-1deg);
+    transition:transform .16s cubic-bezier(.34,1.6,.5,1),box-shadow .16s,filter .16s;user-select:none;
+  }
+  .tab .dot{display:inline-block;width:9px;height:9px;border-radius:999px;margin-right:9px;vertical-align:middle}
+  .sortbar{display:flex;align-items:center;justify-content:center;gap:13px;max-width:1220px;margin:0 auto clamp(14px,2vw,22px)}
+  .sortbar .sortlab{font-family:var(--sub);font-weight:700;font-size:14px;letter-spacing:.03em;text-transform:uppercase;color:#8FB6A0;transition:color .16s;cursor:pointer;user-select:none}
+  .sortbar .sortlab.on{color:#fff}
+  .switch{position:relative;width:60px;height:30px;border-radius:999px;border:3px solid var(--ink);background:var(--brand);cursor:pointer;padding:0;flex:0 0 auto;box-shadow:4px 4px 0 rgba(6,20,12,.35);transition:background .18s}
+  .switch .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:999px;background:#fff;border:2px solid var(--ink);transition:transform .2s cubic-bezier(.34,1.6,.5,1)}
+  .switch[aria-checked="true"] .knob{transform:translateX(30px)}
+  .tab.crit{background:radial-gradient(rgba(0,0,0,.2) .8px,transparent 1.1px) 0 0/9px 9px, var(--red)} .tab.crit .dot{background:#5a0006}
+  .tab.warn{background:radial-gradient(rgba(0,0,0,.2) .8px,transparent 1.1px) 0 0/9px 9px, var(--amber)} .tab.warn .dot{background:#5a3c00}
+  .tab:hover{transform:rotate(0) translateY(-3px) scale(1.03);box-shadow:9px 11px 0 rgba(6,20,12,.55)}
+  .tab[aria-selected="false"]{filter:grayscale(.55) opacity(.7);box-shadow:4px 4px 0 rgba(6,20,12,.4);transform:rotate(0) scale(.96)}
+  .tab .c{background:rgba(0,0,0,.18);border-radius:999px;padding:2px 11px;margin-left:10px;font-size:.82em}
+
+  /* ---------- BOARD ---------- */
+  .board{max-width:1220px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(16px,2.2vw,28px)}
+  .board[hidden]{display:none}
+  @media (max-width:860px){.board{grid-template-columns:1fr}}
+  .card{
+    position:relative;background:var(--surface);color:var(--ink);border-radius:26px;
+    padding:clamp(18px,2vw,26px) clamp(18px,2vw,26px) clamp(14px,1.6vw,20px);
+    border:4px solid var(--ink);box-shadow:var(--shadow);
+    transition:transform .18s cubic-bezier(.34,1.5,.5,1),box-shadow .18s;
+  }
+  .card:nth-child(3n+1){transform:rotate(-1deg)} .card:nth-child(3n+2){transform:rotate(.8deg)} .card:nth-child(3n){transform:rotate(-.4deg)}
+  .card:hover{transform:rotate(0) translateY(-6px);box-shadow:var(--shadow-lg)}
+  .card.crit{border-color:var(--red)} .card.warn{border-color:var(--amber)}
+  .card .stripe{position:absolute;left:-4px;top:22px;bottom:22px;width:8px;border-radius:999px}
+  .card.crit .stripe{background:var(--red)} .card.warn .stripe{background:var(--amber)}
+  .rk{position:absolute;top:10px;right:16px;z-index:1;font-weight:800;font-size:clamp(38px,4.6vw,60px);line-height:.8;-webkit-text-stroke:2.5px #BFD3C6;color:#BFD3C6;opacity:1}
+  .card::before{content:"";position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:26px;height:26px;border-radius:50%;background:var(--brand);border:3px solid var(--lilac);box-shadow:3px 4px 0 rgba(6,20,12,.32);z-index:4}
+  .card.crit::before{background:var(--red);border-color:#A82A38}
+  .card.warn::before{background:var(--amber);border-color:#B0790F}
+  .card::after{content:"";position:absolute;top:6px;right:6px;width:308px;height:265px;pointer-events:none;z-index:0;
+    border-top-right-radius:20px;
+    background-image:radial-gradient(rgba(46,125,70,.28) 1.2px, transparent 1.7px);background-size:11px 11px;background-position:right top;
+    -webkit-mask-image:radial-gradient(285px 245px at 100% 0%, #000 0%, #000 38%, transparent 78%);
+    mask-image:radial-gradient(285px 245px at 100% 0%, #000 0%, #000 38%, transparent 78%)}
+
+  .statusrow{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .status{display:inline-flex;align-items:center;gap:7px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:12px;padding:5px 12px;border-radius:999px;border:2.5px solid currentColor}
+  .status.crit{color:var(--red)} .status.warn{color:var(--amber)}
+  /* confirmed / provisional tags (repurposed downtime/slow note element) */
+  .tag{position:relative;display:inline-flex;align-items:center;gap:6px;font-family:var(--sub);font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:11px;padding:4px 11px;border-radius:999px;cursor:help}
+  .tag.onset{color:#6b4e00;background:#FFF2A8;border:2.5px solid #F2C200}
+  .tag.ongoing{color:#7a1620;background:#FBD5D9;border:2.5px solid #E0495A}
+  .tag .arc{font-size:13px;line-height:1}
+  /* Metal-Gear-style alert "!" for onset */
+  .tag.onset .arc{font-family:'Bungee','Barlow',cursive;font-weight:800;font-size:15px;color:#E8A400;transform:translateY(0)}
+  .tag[data-tip]::after{content:attr(data-tip);position:absolute;left:0;bottom:calc(100% + 9px);width:max-content;max-width:250px;white-space:normal;text-align:left;background:var(--ink);color:#fff;font-family:var(--bubbly);font-weight:600;font-size:11.5px;line-height:1.4;padding:9px 11px;border-radius:11px;opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .18s,transform .18s;box-shadow:5px 6px 0 rgba(6,20,12,.32);z-index:6}
+  .tag[data-tip]:hover::after{opacity:1;transform:translateY(0)}
+  .status .blink{width:9px;height:9px;border-radius:999px;background:currentColor}
+  .card.crit .status .blink{animation:blink 1.1s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+
+  .dest{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:800;font-size:clamp(20px,2.3vw,28px);line-height:1.02;margin:.14em 0 .04em}
+  .dest .destname{flex:1 1 auto;min-width:0;font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.01em}
+  .route{font-weight:600;color:var(--muted);font-size:14px;margin:4px 0 10px 4px}
+  .route b{color:var(--ink)}
+
+  .impactwrap{display:flex;align-items:center;gap:14px;margin:16px 0 16px}
+  .impact{font-weight:800;font-size:clamp(44px,5.6vw,68px);line-height:.85;letter-spacing:-.02em}
+  .card.crit .impact{color:var(--red)} .card.warn .impact{color:#b9791b}
+  .kicker,.method-body h4,.status,.pill .k,.stat .k,.jlab,.dlab,.ftkick,.impact-k{font-family:var(--sub)}
+  .impact-k{font-weight:600;font-size:13px;line-height:1.12;letter-spacing:.01em;color:var(--muted);max-width:22ch;text-transform:uppercase}
+  .impact-k b{color:var(--ink)}
+
+  /* ---------- CHIPS ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px}
+  .chip{position:relative;font-weight:700;font-size:12.5px;padding:6px 12px;border-radius:999px;background:#E7F3EB;color:var(--ink);border:2px solid rgba(12,32,22,.14);cursor:default;box-shadow:3px 3px 0 rgba(12,32,22,.12);transition:transform .22s cubic-bezier(.34,1.7,.5,1),box-shadow .22s,background .22s,color .22s;overflow:hidden;white-space:nowrap}
+  .chip:hover{transform:translateY(-4px) scale(1.08);box-shadow:5px 7px 0 rgba(12,32,22,.2)}
+  .chip.deliv{border-color:transparent;color:#fff;--mx:50%;--my:50%}
+  .chip.deliv .lab{font-weight:700;opacity:.9;margin-right:5px;font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+  .chip.deliv.good{background:var(--green)} .chip.deliv.mid{background:var(--amber);color:#4a3200} .chip.deliv.bad{background:var(--red)} .chip.deliv.na{background:#CBD8CE;color:#2E3B33}
+  .chip.deliv::before{content:"";position:absolute;inset:0;background:rgba(255,255,255,.4);opacity:0;pointer-events:none;clip-path:circle(0 at var(--mx) var(--my));transition:clip-path .72s cubic-bezier(.3,1,.4,1),opacity .3s}
+  .chip.deliv:hover::before{opacity:1;clip-path:circle(140% at var(--mx) var(--my))}
+  .chip.deliv span{position:relative}
+  /* country chip: flip */
+  .chip.geo{background:#14261C;color:#fff;border-color:rgba(255,255,255,.12);letter-spacing:.04em;box-shadow:none;cursor:pointer}
+  .chip.geo:hover{background:var(--brand);border-color:var(--lilac);box-shadow:0 0 0 3px rgba(169,220,184,.32),5px 7px 0 rgba(12,32,22,.2)}
+  /* error-code chips (top-3 transaction error codes) */
+  .errbar{margin:12px 0 2px}
+  .errbar .errlab{font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .chip.errtype{background:#0C3A20;color:#fff;border-color:rgba(255,255,255,.14);font-weight:800;cursor:pointer;white-space:nowrap}
+  .chip.errtype:hover{transform:translateY(-4px) scale(1.06);box-shadow:0 0 0 3px rgba(67,179,107,.34),5px 7px 0 rgba(6,20,12,.2)}
+  .chip.errtype.muted{background:#8AA596;color:#eef4f0;border-color:rgba(255,255,255,.12);opacity:.75}
+  .chip.errtype.muted:hover{opacity:1;box-shadow:0 0 0 3px rgba(138,165,150,.4),5px 7px 0 rgba(6,20,12,.2)}
+  .inforow .iv.ref{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;letter-spacing:.01em}
+  .iv.ref a.reflink{color:inherit;text-decoration:none;border-bottom:1.5px dashed currentColor;padding-bottom:1px;transition:opacity .12s,border-bottom-color .12s}
+  .iv.ref a.reflink:hover,.iv.ref a.reflink:focus-visible{opacity:.7;border-bottom-style:solid}
+  .iv.ref a.reflink{position:relative}
+  .iv.ref a.reflink .refarrow{font-size:11px;margin-left:5px;vertical-align:super;opacity:.65}
+  .iv.ref a.reflink[data-tip]::after{content:attr(data-tip);position:absolute;right:-2px;bottom:calc(100% + 9px);width:max-content;white-space:nowrap;text-align:left;background:var(--ink);color:#fff;font-family:var(--bubbly);font-weight:600;font-size:11.5px;line-height:1.4;letter-spacing:0;padding:8px 11px;border-radius:11px;box-shadow:5px 6px 0 rgba(6,20,12,.32);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .16s,transform .16s;z-index:8}
+  .iv.ref a.reflink[data-tip]:hover::after,.iv.ref a.reflink[data-tip]:focus-visible::after{opacity:1;transform:translateY(0)}
+  /* clickable definition popovers */
+  .chip[data-pop]{cursor:pointer}
+  .chip[data-pop].pop-active{outline:3px solid rgba(46,125,70,.55);outline-offset:2px}
+  #dpa-pop{position:fixed;z-index:50;max-width:262px;background:var(--ink);color:#fff;font-family:var(--bubbly);font-weight:600;font-size:12.5px;line-height:1.45;padding:11px 13px;border-radius:12px;box-shadow:6px 8px 0 rgba(6,20,12,.42);opacity:0;transform:translateY(6px) scale(.98);pointer-events:none;transition:opacity .16s,transform .16s}
+  #dpa-pop.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+  #dpa-pop .pt{display:block;font-weight:800;color:var(--lilac);margin-bottom:4px;font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+  #dpa-pop .ps{margin-top:8px;padding-top:7px;border-top:1px solid rgba(255,255,255,.16);font-weight:800;color:#fff}
+
+  /* ---------- delivery journey (labelled) ---------- */
+  .journey{margin:4px 0 2px}
+  .journey .jlab{font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+
+  /* ---------- decomposition bar ---------- */
+  .decomp{margin:12px 0 8px}
+  .decomp .dlab{font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .decomp .bar{height:16px;border-radius:999px;overflow:hidden;display:flex;border:2.5px solid var(--ink);background:#E4EFE8}
+  .decomp .seg{height:100%;transition:flex-grow .3s}
+  .decomp .seg.u{background:var(--red)} .decomp .seg.d{background:var(--green)}
+  .decomp .key{display:flex;gap:14px;flex-wrap:wrap;margin-top:7px;font-weight:700;font-size:11.5px;color:var(--muted)}
+  .decomp .key i{font-style:normal;display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  .decomp .key .u i{background:var(--red)} .decomp .key .d i{background:var(--green)}
+  .decomp .key .tot{font-weight:800;color:var(--ink)} .decomp .key .tot i{background:var(--ink)}
+
+  /* ---------- stat grid ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+  .stat{position:relative;background:#EAF4EE;border:2px solid rgba(12,32,22,.1);border-radius:14px;padding:8px 10px;text-align:center}
+  .stat .v{font-weight:800;font-size:16px;line-height:1}
+  .stat .k{font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:3px}
+  /* undelivered bubbles — highlighted red fill so the lost transfers pop */
+  .stat.und{background:var(--red);border-color:rgba(0,0,0,.12)}
+  .stat.und .v{color:#fff} .stat.und .k{color:#ffe1e4}
+
+  /* ---------- card footers ---------- */
+  .dipwin{margin-top:11px;font-weight:600;font-size:13px;color:var(--muted)}
+  .dipwin b{color:var(--ink)}
+  .flagged{margin-top:9px;padding-top:9px;border-top:2px dashed rgba(12,32,22,.14);font-weight:700;font-size:12px;color:var(--brand);line-height:1.7;cursor:help;position:relative}
+  .flagged[data-tip]::after{content:attr(data-tip);position:absolute;left:0;bottom:calc(100% + 8px);width:max-content;max-width:260px;background:var(--ink);color:#fff;font-family:var(--bubbly);font-weight:600;font-size:11.5px;line-height:1.4;padding:8px 11px;border-radius:11px;box-shadow:5px 6px 0 rgba(6,20,12,.32);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .16s,transform .16s;z-index:6}
+  .flagged[data-tip]:hover::after{opacity:1;transform:translateY(0)}
+  .flagged .flag{font-size:13px;margin-right:5px}
+  .flagged .flagbadge{display:inline-block;font-weight:800;font-size:11px;letter-spacing:.04em;color:#fff;background:var(--brand);padding:4px 10px;border-radius:999px;text-decoration:none;cursor:pointer;transition:transform .16s cubic-bezier(.34,1.7,.5,1),box-shadow .16s}
+  .flagged .flagbadge:hover{transform:translateY(-2px) scale(1.07);box-shadow:3px 4px 0 rgba(12,32,22,.25)}
+
+  /* ---------- empty ---------- */
+  .empty{grid-column:1/-1;text-align:center;color:#CFE3D7;background:rgba(255,255,255,.05);border:3px dashed rgba(255,255,255,.18);border-radius:26px;padding:clamp(30px,6vw,70px)}
+  .empty h3{font-weight:800;font-size:clamp(20px,3vw,30px);margin-bottom:8px;color:#fff}
+  .empty code{background:rgba(255,255,255,.12);padding:2px 8px;border-radius:7px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9em}
+
+  .legend{max-width:1220px;margin:clamp(18px,2.6vw,30px) auto 0;color:#A7C4B4;font-weight:600;font-size:13px;line-height:1.5;text-align:center}
+  .legend b{color:#fff}
+
+  /* ---------- centered modal (tier detail / country) ---------- */
+  .ftmodal{position:absolute;top:0;left:0;width:100%;z-index:100;padding:0;background:rgba(6,16,10,.62);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s}
+  .ftmodal.show{opacity:1;pointer-events:auto}
+  .ftcard{position:relative;width:min(540px,94vw);max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:4px solid var(--brand);border-radius:24px;box-shadow:16px 16px 0 rgba(4,14,8,.5);padding:26px 24px 20px;transform:translateY(16px) scale(.95);transition:transform .24s cubic-bezier(.34,1.55,.5,1)}
+  .ftmodal.show .ftcard{transform:none}
+  .ftcard::after{content:"";position:absolute;top:8px;right:8px;width:233px;height:185px;pointer-events:none;z-index:0;border-top-right-radius:20px;
+    background-image:radial-gradient(rgba(46,125,70,.26) 1.2px, transparent 1.7px);background-size:11px 11px;background-position:right top;
+    -webkit-mask-image:radial-gradient(215px 173px at 100% 0%, #000 0%, #000 36%, transparent 78%);mask-image:radial-gradient(215px 173px at 100% 0%, #000 0%, #000 36%, transparent 78%)}
+  .ftcard>*{position:relative;z-index:1}
+  .ftx{position:absolute;top:12px;right:14px;z-index:2;width:34px;height:34px;border-radius:999px;border:3px solid var(--ink);background:#fff;font-size:20px;font-weight:800;line-height:1;cursor:pointer;color:var(--ink);transition:transform .15s,background .15s}
+  .ftx:hover{background:var(--brand);color:#fff;border-color:var(--brand);transform:rotate(90deg)}
+  .ftkick{font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand)}
+  .ftttl{font-weight:800;font-size:clamp(20px,3vw,26px);line-height:1.05;margin:2px 0 2px;padding-right:30px}
+  .ftsub{font-weight:600;color:var(--muted);font-size:13px;margin-bottom:16px}
+  .ftrow{animation:ftin .32s both}
+  @keyframes ftin{0%{opacity:0;transform:translateX(-10px)}100%{opacity:1;transform:none}}
+  .ftnote{margin-top:16px;font-weight:600;font-size:11.5px;color:var(--muted);line-height:1.45;border-top:2px dashed rgba(12,32,22,.14);padding-top:10px}
+  .inforow{display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid rgba(12,32,22,.1)}
+  .inforow:last-child{border-bottom:none}
+  .inforow .il{font-weight:600;color:var(--muted);font-size:13px}
+  .inforow .iv{font-weight:800;font-size:16px;color:var(--ink);white-space:nowrap}
+  .inforow .iv.good{color:var(--green)} .inforow .iv.bad{color:var(--red)} .inforow .iv.mid{color:#b9791b} .inforow .iv.brand{color:var(--brand)}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+
+  /* ---- refresh screensaver: swirl ---- */
+  #loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+    background:
+      radial-gradient(900px 620px at 8% -6%, rgba(46,125,70,.60), transparent 60%),
+      radial-gradient(820px 640px at 100% -4%, rgba(67,179,107,.42), transparent 55%),
+      radial-gradient(1000px 820px at 50% 122%, rgba(169,220,184,.26), transparent 55%),
+      var(--bg);
+    transition:opacity .55s ease, visibility .55s ease}
+  #loader.done{opacity:0;visibility:hidden}
+  .swirlwrap{display:flex;flex-direction:column;align-items:center;gap:28px}
+  .swirl{position:relative;width:min(46vmin,300px);aspect-ratio:1;display:grid;place-items:center}
+  .swirl i{position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(from 0deg, transparent 0 12%, var(--brand-bright) 32%, var(--lilac) 55%, transparent 72% 100%);
+    -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+            mask:radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+    animation:swirlspin 2.4s cubic-bezier(.62,.03,.38,.97) infinite}
+  .swirl i:nth-child(2){inset:17%;filter:hue-rotate(20deg);opacity:.85;animation-duration:1.8s;animation-direction:reverse}
+  .swirl i:nth-child(3){inset:34%;filter:hue-rotate(-14deg);opacity:.7;animation-duration:1.35s}
+  .swirl .core{position:absolute;width:13%;aspect-ratio:1;border-radius:50%;background:var(--lilac);box-shadow:0 0 26px 6px rgba(169,220,184,.55);animation:swirlpulse 1.4s ease-in-out infinite}
+  .swirl-cap{font-family:var(--sub);font-weight:800;letter-spacing:.24em;text-transform:uppercase;font-size:13px;color:var(--lilac);animation:swirlpulse 1.4s ease-in-out infinite}
+  @keyframes swirlspin{to{transform:rotate(360deg)}}
+  @keyframes swirlpulse{0%,100%{opacity:.5;transform:scale(.92)}50%{opacity:1;transform:scale(1.06)}}
+  @media (prefers-reduced-motion:reduce){.swirl i,.swirl .core,.swirl-cap{animation:none}}
+</style>
+
+<div id="loader" role="status" aria-label="Loading">
+  <div class="swirlwrap">
+    <div class="swirl"><i></i><i></i><i></i><span class="core"></span></div>
+    <div class="swirl-cap">Scanning BINs…</div>
+  </div>
+</div>
+
+<h2 class="sr-only">Remitly payout-BIN sudden-drop dashboard: Push-to-Card receiving BINs whose delivery rate broke, split into critical and warn, ranked by undelivered transfers.</h2>
+
+<div class="hero">
+  <h1><span class="a">BIN</span> <span class="b">CHECKUP</span></h1>
+  <p class="sub">Receiving <b>card BINs</b> whose Push-to-Card delivery rate suddenly <b>broke against a healthy baseline</b>, caught at onset by the daily tiers.</p>
+  <div class="snap" id="snap"></div>
+</div>
+
+<details class="method" open id="howto">
+  <summary><span class="mk">▶</span> <span class="howtxt">How to read this board</span> <span class="tagline">what every number means</span></summary>
+  <div class="method-body">
+    <p>This board watches <b>Push-to-Card payout delivery at the receiving card-BIN grain</b> — a single card BIN going bad on an otherwise-healthy destination surfaces on its own (a partner/destination monitor would never see it). Each card is one <b>receiving country × card BIN</b>. A BIN appears only when its delivery rate breaks against its own healthy baseline, and <b>drops off automatically once its most recent 2 days recover above 85%</b>.</p>
+
+    <h4>The two pages</h4>
+    <div class="method-grid">
+      <div class="mrow"><span class="term">Critical</span> — a near-total break <b>right now</b>: the most recent 2 days are ≤ 10% delivery.</div>
+      <div class="mrow"><span class="term">Warn</span> — flagged, but not a current near-total break — the recent 2-day rate is <b>above 10%</b> (a partial break, or a BIN on the mend). A BIN whose most recent 2 days fully recover above 85% drops off the board entirely.</div>
+    </div>
+
+    <h4>The big number &amp; sorting</h4>
+    <p>The switch under the tabs flips the big number between <b>Worst rate</b> — delivery over the <b>most recent 2 days</b>, the current state — and <b>Undelivered</b> — the count of transfers that didn't complete (sent − delivered) over the last 7 days. Either way the list is ranked by <b>undelivered</b> transfers <i>within each page</i>, <b>Critical first</b>.</p>
+
+    <h4>Delivery rate — four lenses (healthy → onset → now)</h4>
+    <div class="method-grid">
+      <div class="mrow"><span class="term">Baseline</span> — the BIN's healthy rate: median weekly delivery over the prior 8 weeks. The flag fires against this.</div>
+      <div class="mrow"><span class="term">First dip</span> — delivery rate over the <b>first 2 days of the break</b> (starting at the “First dip” date). A snapshot of onset, not the current state — shown for every BIN, including thin ones caught by Sustained.</div>
+      <div class="mrow"><span class="term">7-day</span> — delivery over the <b>most recent 7 days</b> (current sustained state). Shown <b>n/a until the break is 7 days old</b> — before that the window blends in healthy pre-break days and understates the outage. (A BIN can be <i>ongoing</i> yet younger than 7 days: “ongoing” means ≥3 breaching days, not a 7-day-old break.)</div>
+      <div class="mrow"><span class="term">2-day</span> — delivery over the <b>most recent 2 days</b> (the sharpest read of right now). <b>Critical</b> is keyed to this.</div>
+    </div>
+    <p style="margin-top:6px">Baseline and First dip are anchored at the break's <i>onset</i>; 7-day and 2-day are trailing windows anchored to <i>now</i> (maturity-guarded, so the partial latest day is excluded). Tap any of the First dip / 7-day / 2-day chips to see the <b>sent &amp; undelivered</b> counts for that window. Colored <b style="color:var(--green)">green ≥85%</b>, <b style="color:var(--amber)">amber 50–85%</b>, <b style="color:var(--red)">red &lt;50%</b>.</p>
+
+    <h4>The bar — delivered vs undelivered <i>since the first dip</i></h4>
+    <p>Splits every transfer <b>from the first-dip date through now</b> into <b style="color:var(--green)">delivered</b> and <b style="color:var(--red)">undelivered</b> — the whole break (its length in days is in the label), not a fixed trailing window.</p>
+
+    <h4>Error breakdown</h4>
+    <p>The three chips are this BIN’s <b>top transaction error codes</b> among its undelivered transfers (last 14 days), each with its <b>share</b>. “No error code” = ended undelivered with nothing recorded (typically a customer cancellation, or still pending / overdue). <b>Tap a chip</b> for the 3 most recent sample transactions with that code — each is a <b>COFFEE reference number</b> — <b>click it</b> to open that transfer in COFFEE. Per-window sent/undelivered counts live in the First dip / 7-day / 2-day chip popovers.</p>
+
+    <h4>Onset vs ongoing</h4>
+    <p>An <b>onset</b> break was caught by the acute 2-day check only — it just started dropping (the fast, early signal, under 7 days old). An <b>ongoing</b> break also trips the sustained 7-day check, meaning it's been failing across multiple days, not a one-off.</p>
+
+    <h4>How a BIN gets flagged — the tiers</h4>
+    <div class="tierdef"><span class="badge">Acute</span><span>The <b>first 2-day window</b> (≥10 sent) whose rate falls ≥40pp below baseline — the onset signal, shown on each card as <b>“first dip.”</b> Catches a break the same/next day. Note this is the <i>first</i> 2 days of the break, not the most recent 2 (that's the “2-day” lens).</span></div>
+    <div class="tierdef"><span class="badge">Sustained</span><span>≥3 breaching days in the last 7 (day sent ≥3 & rate &lt;50%), 7-day sent ≥15 and rate &lt;50% — a multi-day sag that marks a break as ongoing.</span></div>
+    <p style="margin-top:8px">Baseline healthy gate B ≥ 90%, prior-8-week sent ≥ 80. The most recent (partial) day is dropped — a <b>maturity guard</b>, since Push-to-Card settles fast but not instantly.</p>
+  </div>
+</details>
+
+<div class="tabs" role="tablist">
+  <div class="tab crit" role="tab" id="tab-crit" aria-selected="true"  data-page="crit"><span class="dot"></span>Critical<span class="c" id="c-crit">0</span></div>
+  <div class="tab warn" role="tab" id="tab-warn" aria-selected="false" data-page="warn"><span class="dot"></span>Warn<span class="c" id="c-warn">0</span></div>
+</div>
+
+<div class="sortbar">
+  <span class="sortlab" id="sl-impact" data-mode="impact">Undelivered</span>
+  <button class="switch" id="sortswitch" role="switch" aria-checked="true" aria-label="Sort by undelivered or worst rate"><span class="knob"></span></button>
+  <span class="sortlab on" id="sl-now" data-mode="now">Worst rate</span>
+</div>
+
+<main class="board" id="board-crit" role="tabpanel" aria-labelledby="tab-crit"></main>
+<main class="board" id="board-warn" role="tabpanel" aria-labelledby="tab-warn" hidden></main>
+
+<p class="legend">Ranked by <b>undelivered transfers</b> within each page, Critical first. <b>Tip:</b> tap a colored chip for its definition, or the country chip for detail. Data: live Trino (Stefan's BIN query). Remitly Forest Green #2E7D46.</p>
+
+<!-- DATA INJECTION POINT -->
+<script id="dpa-data" type="application/json">[{"receive_country":"MEX","bin":"411111","severity":"CRITICAL","baseline_rate_pct":99.1,"firstdip_rate":8.4,"firstdip_sent":310,"firstdip_undeliv":284,"rate_now":1.9,"acute_rate":1.9,"sent_2d":322,"undeliv_2d":316,"sust_rate":3.6,"sent_7d":1085,"undeliv_7d":1046,"sent_now":322,"impact_undelivered":1987,"onset":"2026-08-07","dip_days":6,"win_label":"2-day","bar_label":"undelivered","bar_deliv":2,"bar_undeliv":98,"errors":[{"code":"DO_NOT_HONOR","n":1093,"pct":55,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"INVALID_CARD","n":596,"pct":30,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"No error code","n":298,"pct":15,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]}]},{"receive_country":"PHL","bin":"424242","severity":"CRITICAL","baseline_rate_pct":98.6,"firstdip_rate":13.9,"firstdip_sent":180,"firstdip_undeliv":155,"rate_now":4.0,"acute_rate":4.0,"sent_2d":174,"undeliv_2d":167,"sust_rate":7.9,"sent_7d":610,"undeliv_7d":562,"sent_now":174,"impact_undelivered":1068,"onset":"2026-08-07","dip_days":5,"win_label":"2-day","bar_label":"undelivered","bar_deliv":4,"bar_undeliv":96,"errors":[{"code":"INVALID_CARD","n":502,"pct":47,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"DO_NOT_HONOR","n":406,"pct":38,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"No error code","n":160,"pct":15,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]}]},{"receive_country":"IND","bin":"431111","severity":"CRITICAL","baseline_rate_pct":97.9,"firstdip_rate":6.4,"firstdip_sent":140,"firstdip_undeliv":131,"rate_now":0.0,"acute_rate":0.0,"sent_2d":132,"undeliv_2d":132,"sust_rate":2.2,"sent_7d":462,"undeliv_7d":452,"sent_now":132,"impact_undelivered":859,"onset":"2026-08-07","dip_days":7,"win_label":"2-day","bar_label":"undelivered","bar_deliv":0,"bar_undeliv":100,"errors":[{"code":"DO_NOT_HONOR","n":550,"pct":64,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"EXPIRED_CARD","n":189,"pct":22,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"INVALID_CARD","n":120,"pct":14,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]}]},{"receive_country":"NGA","bin":"511111","severity":"WARN","baseline_rate_pct":96.4,"firstdip_rate":32.7,"firstdip_sent":52,"firstdip_undeliv":35,"rate_now":37.5,"acute_rate":37.5,"sent_2d":48,"undeliv_2d":30,"sust_rate":35.7,"sent_7d":168,"undeliv_7d":108,"sent_now":48,"impact_undelivered":205,"onset":"2026-08-07","dip_days":4,"win_label":"2-day","bar_label":"undelivered","bar_deliv":38,"bar_undeliv":62,"errors":[{"code":"INVALID_CARD","n":84,"pct":41,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"No error code","n":68,"pct":33,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"DO_NOT_HONOR","n":53,"pct":26,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]}]},{"receive_country":"JAM","bin":"522222","severity":"WARN","baseline_rate_pct":95.7,"firstdip_rate":40.0,"firstdip_sent":35,"firstdip_undeliv":21,"rate_now":45.5,"acute_rate":45.5,"sent_2d":33,"undeliv_2d":18,"sust_rate":40.9,"sent_7d":115,"undeliv_7d":68,"sent_now":33,"impact_undelivered":129,"onset":"2026-08-07","dip_days":3,"win_label":"2-day","bar_label":"undelivered","bar_deliv":46,"bar_undeliv":54,"errors":[{"code":"DO_NOT_HONOR","n":75,"pct":58,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"INVALID_CARD","n":37,"pct":29,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"EXPIRED_CARD","n":17,"pct":13,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]}]},{"receive_country":"GTM","bin":"555555","severity":"WARN","baseline_rate_pct":94.9,"firstdip_rate":47.8,"firstdip_sent":23,"firstdip_undeliv":12,"rate_now":52.4,"acute_rate":52.4,"sent_2d":21,"undeliv_2d":10,"sust_rate":49.4,"sent_7d":77,"undeliv_7d":39,"sent_now":21,"impact_undelivered":74,"onset":"2026-08-07","dip_days":6,"win_label":"2-day","bar_label":"undelivered","bar_deliv":52,"bar_undeliv":48,"errors":[{"code":"EXPIRED_CARD","n":33,"pct":45,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"DO_NOT_HONOR","n":27,"pct":36,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]},{"code":"No error code","n":14,"pct":19,"samples":[{"ts":"2026-08-11","ref":"##########"},{"ts":"2026-08-10","ref":"##########"},{"ts":"2026-08-09","ref":"##########"}]}]}]</script>
+<script>window.SNAPSHOT="";</script>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(s,r){return (r||document).querySelector(s);};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var num=function(v){var n=Number(v); return isNaN(n)?'—':n.toLocaleString('en-US');};
+  var pct=function(v){return (v==null||v===''||isNaN(Number(v)))?'n/a':Number(v).toFixed(1)+'%';};
+  var TIER_NAME={A:'Acute', S:'Sustained'};
+  var SORTMODE='now';                 // 'now' (worst rate) | 'impact' (undelivered)
+  var FLAGGED={}, CUNDELIV={};         // per-country counts (filled in run())
+  var POP={
+    geo:['Receive country','Where the transfer is going. BIN breaks here are on the receiving side — a specific issuer BIN range, independent of send country.'],
+    baseline:['Baseline delivery','The BIN’s healthy rate: median weekly delivery over the prior 8 weeks. The flag fires against this.'],
+    'first dip':['First dip','Delivery rate over the FIRST 2 days of the break, starting at the “First dip” date — a snapshot of onset, not the current state. Computed from daily volume for every flagged BIN (the Acute tier only fires at ≥10 sent, but this onset rate is shown even for thinner BINs caught by the Sustained tier).'],
+    '2-day':['Most recent 2 days','Delivery over the most recent 2 days (maturity-guarded) — the sharpest read of the current state, and what Critical is keyed to. The Acute tier itself fires on the FIRST such window — see “First dip.”'],
+    '7-day':['Most recent 7 days','Delivery across the most recent 7 days (current). The Sustained tier fires on ≥3 breaching days with a 7-day rate < 50%.']
+  };
+  function popAttr(k){ var p=POP[k]; return p?(' data-poptitle="'+esc(p[0])+'" data-pop="'+esc(p[1])+'"'):''; }
+
+  var _NUMK=['baseline_rate_pct','acute_rate','sust_rate','firstdip_rate','firstdip_sent','firstdip_undeliv','rate_now','sent_now','bar_sent','bar_undeliv','bar_deliv','impact_undelivered','dip_days','sent_7d','undeliv_7d','sent_2d','undeliv_2d'];
+  function _numify(r){
+    _NUMK.forEach(function(k){ var v=r[k];
+      if(v===null||v===undefined||v===''||v==='null'||v==='None'){ r[k]=null; }
+      else if(typeof v==='string' && !isNaN(Number(v))){ r[k]=Number(v); } });
+    if(typeof r.errors==='string'){ try{ r.errors=JSON.parse(r.errors||'[]'); }catch(e){ r.errors=[]; } }
+    if(!Array.isArray(r.errors)) r.errors=[];
+    return r;
+  }
+  // Mode exposes every query result on the global `datasets`; read the payout-BIN one.
+  function _fromMode(){
+    if (typeof datasets==='undefined' || !datasets) return null;
+    var arr = Array.isArray(datasets) ? datasets : (typeof datasets==='object' ? Object.keys(datasets).map(function(k){return datasets[k];}) : []);
+    var pick=null,i,dd,nm;
+    for(i=0;i<arr.length;i++){ dd=arr[i]; if(!dd) continue; nm=String(dd.queryName||dd.name||dd.query_name||'').toLowerCase();
+      if(nm.indexOf('bin')>=0||nm.indexOf('payout')>=0||nm.indexOf('fire')>=0){ pick=dd; break; } }
+    if(!pick) for(i=0;i<arr.length;i++){ if(arr[i] && (arr[i].content||arr[i].rows)){ pick=arr[i]; break; } }
+    if(!pick) pick=arr[0];
+    if(!pick) return null;
+    var content=pick.content||pick.rows||(Array.isArray(pick)?pick:null);
+    if(!content||!content.length) return content||null;
+    if(Array.isArray(content[0])){ var cols=(pick.columns||[]).map(function(c){return c&&(c.name||c.title)||c;});
+      return content.map(function(a){var o={};cols.forEach(function(n,idx){o[n]=a[idx];});return o;}); }
+    return content;
+  }
+  function loadRows(){
+    var rows=null;
+    if (Array.isArray(window.ROWS)) rows=window.ROWS;
+    if(!rows){ var m=_fromMode(); if(Array.isArray(m)) rows=m; }
+    if(!rows){ var el=document.getElementById('dpa-data'); if(el){ try{ var j=JSON.parse((el.textContent||'').trim()||'[]'); if(Array.isArray(j)) rows=j; }catch(e){} } }
+    if(!rows) rows=[];
+    return rows.map(_numify);
+  }
+  function delivClass(v){ if(v==null||v===''){return 'na';} var n=Number(v); if(isNaN(n)){return 'na';} return n<50?'bad':(n<85?'mid':'good'); }
+  function delivChip(lab,v,po){
+    var pa = po ? (' data-poptitle="'+esc(po.title)+'" data-pop="'+esc(po.body)+'"'+(po.stats?' data-popstats="'+esc(po.stats)+'"':'')) : popAttr(lab);
+    if (v==null||v===''||isNaN(Number(v))) return '<span class="chip deliv na"'+pa+'><span><span class="lab">'+lab+'</span>n/a</span></span>';
+    return '<span class="chip deliv '+delivClass(v)+'"'+pa+'><span><span class="lab">'+lab+'</span>'+Number(v).toFixed(1)+'%</span></span>';
+  }
+  function flaggedLine(tiers){
+    var names=String(tiers||'').split('').filter(Boolean).map(function(t){return TIER_NAME[t]||t;});
+    if(!names.length) return '';
+    var word=names.length>1?'checks':'check';
+    var badges=names.map(function(n){ return '<a class="flagbadge" href="#howto">'+esc(n)+'</a>'; }).join(' + ');
+    return '<div class="flagged" data-tip="See “How to read this board”"><span class="flag">⚑</span>Flagged by the '+badges+' '+word+'</div>';
+  }
+  function imp(r){ return Number(r.impact_undelivered)||0; }
+
+  function card(r, rank){
+    var cls = String(r.severity).toUpperCase()==='CRITICAL' ? 'crit' : 'warn';
+    var ongoing = /S/.test(String(r.tiers||''));
+    var stateTag = ongoing
+      ? '<span class="tag ongoing" data-tip="Trips the sustained check — failed on at least 3 separate days within the last week. Not a one-off."><span class="arc">↻</span> ongoing</span>'
+      : '<span class="tag onset" data-tip="Caught only by the acute check — a sharp 2-day drop, without (yet) a sustained multi-day pattern."><span class="arc">!</span> onset</span>';
+    var geoData = esc(JSON.stringify({country:r.receive_country, bin:r.bin}));
+    // headline depends on sort mode
+    var headline;
+    if(SORTMODE==='now'){
+      headline='<div class="impactwrap"><span class="impact">'+pct(r.rate_now)+'</span>'+
+        '<span class="impact-k">delivered<br>out of '+num(r.sent_now)+' sent<br>('+esc(r.win_label)+' window)</span></div>';
+    }else{
+      headline='<div class="impactwrap"><span class="impact">'+num(imp(r))+'</span>'+
+        '<span class="impact-k"><b>undelivered</b><br>transfers · '+esc(r.bar_label)+'</span></div>';
+    }
+    var bd=Number(r.bar_deliv)||0, bu=Number(r.bar_undeliv)||0;
+    var stat=function(sent,und){ return (sent==null||sent==='')?'':('Sent '+num(sent)+' · '+num(und)+' undelivered'); };
+    var journeyPops={
+      baseline:{title:'Baseline delivery', body:POP.baseline[1]},
+      'first dip':{title:'First dip', body:POP['first dip'][1], stats:stat(r.firstdip_sent,r.firstdip_undeliv)},
+      '2-day':{title:'Most recent 2 days', body:POP['2-day'][1], stats:stat(r.sent_2d,r.undeliv_2d)},
+      '7-day':{title:'Most recent 7 days', body:POP['7-day'][1], stats:(r.sust_rate==null?'':stat(r.sent_7d,r.undeliv_7d))}
+    };
+    var _errs=r.errors; if(typeof _errs==='string'){try{_errs=JSON.parse(_errs);}catch(_e){_errs=[];}} if(!Array.isArray(_errs))_errs=[];
+    var errChips=_errs.length ? ('<div class="errbar"><div class="errlab">Top error codes \u00b7 undelivered, last 14d</div><div class="chips">'
+      + _errs.slice(0,3).map(function(e){ return '<span class="chip errtype'+(e.code==="No error code"?' muted':'')+'" role="button" tabindex="0" data-code="'+esc(e.code)+'" data-n="'+esc(e.n)+'" data-pct="'+esc(e.pct)+'" data-samples="'+esc(JSON.stringify(e.samples||[]))+'" data-title="'+esc(r.receive_country+' \u00b7 BIN '+r.bin)+'">'+esc(e.code)+' \u00b7 '+esc(e.pct)+'%</span>'; }).join('')
+      + '</div></div>') : '';
+    return ''+
+    '<section class="card '+cls+'">'+
+      '<div class="stripe"></div>'+
+      '<div class="rk">#'+rank+'</div>'+
+      '<div class="statusrow"><span class="status '+cls+'"><span class="blink"></span>'+esc(r.severity)+'</span>'+stateTag+'</div>'+
+      '<div class="dest"><span class="chip geo" role="button" tabindex="0" data-geo="'+geoData+'">'+esc(r.receive_country)+'</span><span class="destname">BIN '+esc(r.bin)+'</span></div>'+
+      headline+
+      '<div class="journey"><div class="jlab">Delivery rate: baseline → first dip → 7-day → 2-day</div>'+
+        '<div class="chips">'+delivChip('baseline',r.baseline_rate_pct,journeyPops.baseline)+delivChip('first dip',r.firstdip_rate,journeyPops['first dip'])+delivChip('7-day',r.sust_rate,journeyPops['7-day'])+delivChip('2-day',r.acute_rate,journeyPops['2-day'])+'</div></div>'+
+      '<div class="decomp"><div class="dlab">Transfers <i>since</i> the first dip ('+num(r.dip_days)+(Number(r.dip_days)===1?' day':' days')+'): delivered / undelivered</div>'+
+        '<div class="bar"><div class="seg d" style="flex-grow:'+bd+'"></div><div class="seg u" style="flex-grow:'+bu+'"></div></div>'+
+        '<div class="key"><span class="d"><i></i>'+num(bd)+' delivered'+((bd+bu)>0?' ('+(100*bd/(bd+bu)).toFixed(1)+'%)':'')+'</span><span class="u"><i></i>'+num(bu)+' undelivered</span><span class="tot"><i></i>'+num(bd+bu)+' sent</span></div></div>'+
+      '<div class="dipwin">🕒 First dip started <b>'+esc(r.onset)+'</b></div>'+
+      errChips+
+      flaggedLine(r.tiers)+
+    '</section>';
+  }
+
+  function activeSort(a,b){
+    if(SORTMODE==='now'){
+      var av=(a.rate_now==null||a.rate_now===''||isNaN(Number(a.rate_now)))?Infinity:Number(a.rate_now);
+      var bv=(b.rate_now==null||b.rate_now===''||isNaN(Number(b.rate_now)))?Infinity:Number(b.rate_now);
+      return av-bv || imp(b)-imp(a);
+    }
+    return imp(b)-imp(a) || (Number(a.rate_now)||0)-(Number(b.rate_now)||0);
+  }
+  function fillBoard(el,rows,label){
+    if(!rows.length){ el.innerHTML='<div class="empty"><h3>No '+label+' BINs 🎉</h3><p>Nothing breaking here right now — or no data injected. Feed rows via <code>window.ROWS</code> or the <code>#dpa-data</code> JSON block.</p></div>'; return; }
+    rows.sort(activeSort);
+    el.innerHTML=rows.map(function(r,idx){return card(r,idx+1);}).join('');
+  }
+
+  var _pop=null,_anchor=null;
+  function initPop(){
+    if(_pop) return;
+    _pop=document.createElement('div'); _pop.id='dpa-pop'; document.body.appendChild(_pop);
+    function hide(){ _pop.classList.remove('show'); if(_anchor){ _anchor.classList.remove('pop-active'); _anchor=null; } }
+    function show(chip){
+      var t=chip.getAttribute('data-poptitle')||'', b=chip.getAttribute('data-pop')||'', st=chip.getAttribute('data-popstats')||'';
+      _pop.innerHTML=(t?'<span class="pt">'+esc(t)+'</span>':'')+esc(b)+(st?'<div class="ps">'+esc(st)+'</div>':'');
+      _pop.classList.add('show');
+      var r=chip.getBoundingClientRect(), pw=_pop.offsetWidth, ph=_pop.offsetHeight;
+      var left=Math.min(Math.max(8,r.left), window.innerWidth-pw-8);
+      var top=r.bottom+10; if(top+ph>window.innerHeight-8) top=Math.max(8, r.top-ph-10);
+      _pop.style.left=left+'px'; _pop.style.top=top+'px';
+      chip.classList.add('pop-active'); _anchor=chip;
+    }
+    document.addEventListener('click',function(e){
+      var chip=e.target.closest?e.target.closest('.chip[data-pop]'):null;
+      if(chip){ e.preventDefault(); e.stopPropagation(); if(_anchor===chip){ hide(); } else { hide(); show(chip); } return; }
+      if(!(e.target.closest && e.target.closest('#dpa-pop'))) hide();
+    });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') hide(); });
+    window.addEventListener('scroll',hide,true); window.addEventListener('resize',hide);
+  }
+  function initInfo(){
+    if(document.getElementById('infomodal')) return;
+    var ov=document.createElement('div'); ov.id='infomodal'; ov.className='ftmodal';
+    var _lastAnchor=null;
+    ov.innerHTML='<div class="ftcard" role="dialog" aria-modal="true" aria-labelledby="infttl">'
+      +'<button class="ftx" aria-label="Close">×</button>'
+      +'<div class="ftkick"></div>'
+      +'<h3 id="infttl" class="ftttl"></h3><div class="ftsub"></div>'
+      +'<div class="infobody" style="margin-top:6px"></div>'
+      +'<div class="ftnote"></div></div>';
+    document.body.appendChild(ov);
+    function close(){ ov.classList.remove('show'); }
+    ov.addEventListener('click',function(e){ if(e.target===ov || (e.target.closest && e.target.closest('.ftx'))) close(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
+    function open(o){
+      ov.querySelector('.ftkick').textContent=o.kick||'';
+      ov.querySelector('.ftttl').textContent=o.title||'';
+      ov.querySelector('.ftsub').textContent=o.subtitle||'';
+      ov.querySelector('.infobody').innerHTML=(o.rows||[]).map(function(x,idx){
+        var _v = x.href ? ('<a class="reflink" data-tip="Open in COFFEE" href="'+esc(x.href)+'" target="_blank" rel="noopener">'+esc(x.value)+'<span class="refarrow" aria-hidden="true">\u2197</span></a>') : esc(x.value);
+        return '<div class="ftrow inforow" style="animation-delay:'+(idx*45)+'ms"><span class="il">'+esc(x.label)+'</span><span class="iv '+(x.cls||'')+'">'+_v+'</span></div>';
+      }).join('');
+      ov.querySelector('.ftnote').textContent=o.note||'';
+      ov.classList.add('show');
+      // Mode renders HTML cells in an auto-height iframe, so position:fixed centering lands
+      // over the whole tall iframe. Anchor the card to the clicked chip via document coords instead.
+      ov.style.height=Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)+'px';
+      var _card=ov.querySelector('.ftcard');
+      requestAnimationFrame(function(){
+        var sx=window.pageXOffset||0, sy=window.pageYOffset||0, vw=window.innerWidth, vh=window.innerHeight;
+        var cw=_card.offsetWidth, chh=_card.offsetHeight;
+        var left=sx+Math.max(8,(vw-cw)/2), top;
+        if(_lastAnchor && _lastAnchor.getBoundingClientRect){ var rr=_lastAnchor.getBoundingClientRect(); top=sy+rr.bottom+10; }
+        else { top=sy+Math.max(16,(vh-chh)/2); }
+        var maxTop=Math.max(8,(parseFloat(ov.style.height)||0)-chh-8);
+        if(top>maxTop) top=maxTop;
+        _card.style.position='absolute'; _card.style.margin='0'; _card.style.left=left+'px'; _card.style.top=top+'px';
+      });
+    }
+    function fromGeo(chip){
+      _lastAnchor=chip;
+      var g={}; try{ g=JSON.parse(chip.getAttribute('data-geo')||'{}'); }catch(_e){}
+      var c=g.country||'';
+      open({kick:'Receive country', title:c, subtitle:'Flagged Push-to-Card BINs going to '+c,
+        rows:[
+          {label:'Flagged BINs here', value:num(FLAGGED[c]||0)+' on the board', cls:'brand'},
+          {label:'Undelivered across them', value:num(CUNDELIV[c]||0), cls:((CUNDELIV[c]||0)>0?'bad':'')}
+        ],
+        note:'Several BINs in the same country lighting up together usually points to an issuer BIN-range or Card Network route event rather than one bad card.'});
+    }
+    function fromErr(chip){
+      _lastAnchor=chip;
+      var arr=[]; try{ arr=JSON.parse(chip.getAttribute('data-samples')||'[]'); }catch(_e){}
+      var code=chip.getAttribute('data-code')||'', n=chip.getAttribute('data-n')||'', pct=chip.getAttribute('data-pct')||'', title=chip.getAttribute('data-title')||'';
+      open({kick:'Error code · sample transactions', title:title,
+        subtitle:code+' — '+n+' undelivered ('+pct+'%) · 3 most recent',
+        rows:arr.length?arr.map(function(x){ return {label:(x.ts||'—'), value:(x.ref||'—'), cls:'brand ref', href:(x.ref?('https://coffee.example.com/portal/pages/payout/transactions/search?q='+encodeURIComponent(x.ref)):null)}; })
+                        :[{label:'No samples captured.', value:'', cls:''}],
+        note:'Reference numbers (public transaction ID) — click one to open it in COFFEE. The 3 most recent undelivered transfers carrying this transaction error code (last 14 days). Source: public.transactions × transaction_error_dimension.'});
+    }
+    document.addEventListener('click',function(e){
+      var g=e.target.closest?e.target.closest('.chip.geo'):null;
+      if(g){ e.preventDefault(); e.stopPropagation(); fromGeo(g); return; }
+      var sf=e.target.closest?e.target.closest('.chip.errtype'):null;
+      if(sf){ e.preventDefault(); e.stopPropagation(); fromErr(sf); return; }
+    });
+    document.addEventListener('keydown',function(e){
+      if(e.key!=='Enter'&&e.key!==' ') return; var a=document.activeElement; if(!a||!a.classList) return;
+      if(a.classList.contains('geo')){ e.preventDefault(); fromGeo(a); }
+      else if(a.classList.contains('errtype')){ e.preventDefault(); fromErr(a); }
+    });
+  }
+  function run(){
+    initPop(); initInfo();
+    var _shineChip=null;
+    document.addEventListener('pointerover', function(e){
+      var chip=e.target.closest?e.target.closest('.chip.deliv'):null;
+      if(chip && chip!==_shineChip){
+        var r=chip.getBoundingClientRect();
+        chip.style.setProperty('--mx',(e.clientX-r.left)+'px');
+        chip.style.setProperty('--my',(e.clientY-r.top)+'px');
+        _shineChip=chip;
+      } else if(!chip){ _shineChip=null; }
+    });
+    var rows=loadRows().filter(function(r){
+      // recovery suppression (mirrors the detector): if the most recent 2 days are back above 85%, drop it
+      return !(r.acute_rate!=null && r.acute_rate!=='' && Number(r.acute_rate)>85);
+    });
+    FLAGGED={}; CUNDELIV={};
+    rows.forEach(function(r){ var c=r.receive_country||''; FLAGGED[c]=(FLAGGED[c]||0)+1; CUNDELIV[c]=(CUNDELIV[c]||0)+imp(r); });
+    var crit=rows.filter(function(r){return String(r.severity).toUpperCase()==='CRITICAL';});
+    var warn=rows.filter(function(r){return String(r.severity).toUpperCase()!=='CRITICAL';});
+    var impact=rows.reduce(function(a,r){return a+imp(r);},0);
+
+    $('#c-crit').textContent=crit.length;
+    $('#c-warn').textContent=warn.length;
+    $('#snap').innerHTML=window.SNAPSHOT?('snapshot <code>'+esc(window.SNAPSHOT)+'</code>'):'';
+
+    function renderBoards(){
+      fillBoard($('#board-crit'),crit.slice(),'critical');
+      fillBoard($('#board-warn'),warn.slice(),'warn');
+    }
+    renderBoards();
+
+    var sw=$('#sortswitch'), slI=$('#sl-impact'), slN=$('#sl-now');
+    function applyMode(m){
+      SORTMODE=m;
+      if(sw) sw.setAttribute('aria-checked', String(m==='now'));
+      if(slI) slI.classList.toggle('on', m==='impact');
+      if(slN) slN.classList.toggle('on', m==='now');
+      renderBoards();
+    }
+    if(sw) sw.addEventListener('click', function(){ applyMode(SORTMODE==='now'?'impact':'now'); });
+    if(slI) slI.addEventListener('click', function(){ applyMode('impact'); });
+    if(slN) slN.addEventListener('click', function(){ applyMode('now'); });
+
+    var tabs=Array.prototype.slice.call(document.querySelectorAll('.tab'));
+    function show(page){
+      tabs.forEach(function(t){ t.setAttribute('aria-selected',String(t.dataset.page===page)); });
+      $('#board-crit').hidden=(page!=='crit');
+      $('#board-warn').hidden=(page!=='warn');
+    }
+    tabs.forEach(function(t){ t.addEventListener('click',function(){ show(t.dataset.page); }); });
+    show(crit.length?'crit':'warn');
+    _hideLoader();
+  }
+  var _loadStart=Date.now();
+  function _hideLoader(){
+    var el=document.getElementById('loader'); if(!el) return;
+    var wait=Math.max(0, 900-(Date.now()-_loadStart));
+    setTimeout(function(){ el.classList.add('done'); }, wait);
+  }
+  setTimeout(function(){ var el=document.getElementById('loader'); if(el) el.classList.add('done'); }, 6000);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run); else run();
+})();
+</script>
+
+<div id="preview-banner">
+  <b>PREVIEW — synthetic data.</b>
+  Partner, bank and issuer names are placeholders; card BINs are non-routable test
+  numbers; every transaction reference is masked. Connect this cell to its Mode query
+  to see live data.
+</div>
+<script id="preview-banner-js">
+(function(){
+  // Hide the notice the moment real Mode data is present.
+  function live(){
+    try{
+      var d = window.datasets;
+      if(d && d.length){
+        for(var i=0;i<d.length;i++){
+          var c = d[i] && d[i].content;
+          if(c && c.length) return true;
+        }
+      }
+    }catch(e){}
+    return false;
+  }
+  function apply(){
+    var b = document.getElementById('preview-banner');
+    if(b && live()) b.style.display='none';
+  }
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+  setTimeout(apply, 800);
+})();
+</script>

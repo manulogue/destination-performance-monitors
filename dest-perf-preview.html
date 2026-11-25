@@ -1,0 +1,947 @@
+
+<style id="preview-banner-css">
+#preview-banner{position:fixed;left:0;right:0;bottom:0;z-index:99999;
+ background:#1c1917;color:#fafaf9;font:500 12px/1.5 ui-sans-serif,system-ui,sans-serif;
+ padding:8px 14px;text-align:center;letter-spacing:.02em;
+ border-top:2px solid #f59e0b;box-shadow:0 -2px 12px rgba(0,0,0,.25)}
+#preview-banner b{color:#fbbf24}
+</style>
+<!-- ============================================================================
+     DESTINATION-PERFORMANCE DASHBOARD  ·  data-less shell for the dest-perf alarm
+     Style: "THE FINAL FOUR" (chunky cards, hard shadows, bubbly type) in Remitly
+     colors (Indigo #494EB8, a blend of Remitly royal blue + royal purple). Two pages: Ongoing /
+     Recovering. Delightful chip hover animations. Self-explaining (Method panel).
+
+     THIS FILE HOLDS NO DATA OF ITS OWN. It renders whatever the SQL gives it.
+     IN MODE: add this as an HTML cell in the same Report as the dest_perf_alarm_mode.sql
+       query — it reads the rows automatically from Mode's built-in `datasets` global
+       (dataset.content). No Python, no injection, no build step. It follows the query.
+     STANDALONE: set window.ROWS = [ {...} ] before this runs, or paste JSON into the
+       <script id="dpa-data" type="application/json">[{"country":"MEX","destination":"Bank 1","institution_code":"MEX_BANK_1","name":"Bank 1","partner":"Partner 1","method":"BANK_DEPOSIT","currency":"USD","outage_status":"ongoing","perf_class":"critical","deliv_pct_baseline":97.4,"deliv_pct_during_dip":4.6,"deliv_pct_now":2.1,"mature_deliv_pct":3.5,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"","dip_days":6,"sent_baseline":7360,"delivered_baseline":7169,"sent_dip":1840,"delivered_dip":85,"sent_now":520,"delivered_now":11,"sent_7d":1840,"delivered_7d":71,"atrisk_7d":1769,"failed_7d":1097,"overdue_7d":531,"inflight_7d":141,"sent_5d":1310,"delivered_5d":42,"atrisk_5d":1268,"failed_5d":786,"overdue_5d":380,"inflight_5d":102,"impact":1628,"impact_5d":1166,"country_sent_5d":3144,"country_undeliv_5d":1711,"txns_at_risk_hourly":11,"ttd_p50_h":4.2,"ttd_p90_h":26.8,"coming_out_of_downtime":false,"substitute_partner":"Partner 4","substitute_info":"{\"partner\": \"Partner 4\", \"id\": \"P4\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"PARTNER_REJECTED","n":786,"pct":62},{"code":"ACCOUNT_INVALID","n":380,"pct":30},{"code":"Undefined","n":102,"pct":8}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]},{"country":"PHL","destination":"Bank 2","institution_code":"PHL_BANK_2","name":"Bank 2","partner":"Partner 2","method":"CASH_PICKUP","currency":"USD","outage_status":"ongoing","perf_class":"critical","deliv_pct_baseline":96.1,"deliv_pct_during_dip":9.2,"deliv_pct_now":4.8,"mature_deliv_pct":7.7,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"","dip_days":3,"sent_baseline":3680,"delivered_baseline":3536,"sent_dip":920,"delivered_dip":85,"sent_now":310,"delivered_now":15,"sent_7d":920,"delivered_7d":72,"atrisk_7d":848,"failed_7d":466,"overdue_7d":280,"inflight_7d":102,"sent_5d":660,"delivered_5d":45,"atrisk_5d":615,"failed_5d":338,"overdue_5d":203,"inflight_5d":74,"impact":746,"impact_5d":541,"country_sent_5d":1584,"country_undeliv_5d":830,"txns_at_risk_hourly":5,"ttd_p50_h":6.8,"ttd_p90_h":34.0,"coming_out_of_downtime":false,"substitute_partner":"Partner 5","substitute_info":"{\"partner\": \"Partner 5\", \"id\": \"P5\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"ACCOUNT_INVALID","n":295,"pct":48},{"code":"PARTNER_REJECTED","n":240,"pct":39},{"code":"Undefined","n":80,"pct":13}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]},{"country":"IND","destination":"Bank 3","institution_code":"IND_BANK_3","name":"Bank 3","partner":"Partner 3","method":"BANK_DEPOSIT","currency":"USD","outage_status":"ongoing","perf_class":"degraded","deliv_pct_baseline":98.0,"deliv_pct_during_dip":17.4,"deliv_pct_now":11.3,"mature_deliv_pct":15.7,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"","dip_days":4,"sent_baseline":5240,"delivered_baseline":5135,"sent_dip":1310,"delivered_dip":228,"sent_now":380,"delivered_now":43,"sent_7d":1310,"delivered_7d":204,"atrisk_7d":1106,"failed_7d":531,"overdue_7d":442,"inflight_7d":133,"sent_5d":940,"delivered_5d":132,"atrisk_5d":808,"failed_5d":388,"overdue_5d":323,"inflight_5d":97,"impact":973,"impact_5d":711,"country_sent_5d":2256,"country_undeliv_5d":1090,"txns_at_risk_hourly":7,"ttd_p50_h":3.1,"ttd_p90_h":18.2,"coming_out_of_downtime":false,"substitute_partner":"Partner 6","substitute_info":"{\"partner\": \"Partner 6\", \"id\": \"P6\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"PARTNER_REJECTED","n":444,"pct":55},{"code":"LIMIT_EXCEEDED","n":218,"pct":27},{"code":"ACCOUNT_INVALID","n":146,"pct":18}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]},{"country":"NGA","destination":"Bank 4","institution_code":"NGA_BANK_4","name":"Bank 4","partner":"Partner 4","method":"BANK_DEPOSIT","currency":"USD","outage_status":"recovering","perf_class":"degraded","deliv_pct_baseline":95.2,"deliv_pct_during_dip":40.9,"deliv_pct_now":79.5,"mature_deliv_pct":67.9,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"2026-08-12 00:00","dip_days":5,"sent_baseline":2560,"delivered_baseline":2437,"sent_dip":640,"delivered_dip":262,"sent_now":205,"delivered_now":163,"sent_7d":640,"delivered_7d":336,"atrisk_7d":304,"failed_7d":134,"overdue_7d":103,"inflight_7d":67,"sent_5d":455,"delivered_5d":283,"atrisk_5d":172,"failed_5d":76,"overdue_5d":58,"inflight_5d":38,"impact":237,"impact_5d":134,"country_sent_5d":1092,"country_undeliv_5d":232,"txns_at_risk_hourly":0,"ttd_p50_h":9.5,"ttd_p90_h":47.5,"coming_out_of_downtime":false,"substitute_partner":"Partner 1","substitute_info":"{\"partner\": \"Partner 1\", \"id\": \"P1\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"ACCOUNT_INVALID","n":76,"pct":44},{"code":"Undefined","n":53,"pct":31},{"code":"PARTNER_REJECTED","n":43,"pct":25}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]},{"country":"JAM","destination":"Bank 5","institution_code":"JAM_BANK_5","name":"Bank 5","partner":"Partner 5","method":"CASH_PICKUP","currency":"USD","outage_status":"recovering","perf_class":"degraded","deliv_pct_baseline":93.8,"deliv_pct_during_dip":52.2,"deliv_pct_now":87.9,"mature_deliv_pct":75.2,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"2026-08-12 00:00","dip_days":2,"sent_baseline":1640,"delivered_baseline":1538,"sent_dip":410,"delivered_dip":214,"sent_now":140,"delivered_now":123,"sent_7d":410,"delivered_7d":258,"atrisk_7d":152,"failed_7d":88,"overdue_7d":41,"inflight_7d":23,"sent_5d":295,"delivered_5d":212,"atrisk_5d":83,"failed_5d":48,"overdue_5d":22,"inflight_5d":13,"impact":129,"impact_5d":70,"country_sent_5d":708,"country_undeliv_5d":112,"txns_at_risk_hourly":0,"ttd_p50_h":2.4,"ttd_p90_h":12.9,"coming_out_of_downtime":false,"substitute_partner":"Partner 2","substitute_info":"{\"partner\": \"Partner 2\", \"id\": \"P2\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"PARTNER_REJECTED","n":59,"pct":71},{"code":"ACCOUNT_INVALID","n":16,"pct":19},{"code":"Undefined","n":8,"pct":10}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]},{"country":"GTM","destination":"Bank 6","institution_code":"GTM_BANK_6","name":"Bank 6","partner":"Partner 6","method":"HOME_DELIVERY","currency":"USD","outage_status":"ongoing","perf_class":"degraded","deliv_pct_baseline":96.9,"deliv_pct_during_dip":12.7,"deliv_pct_now":8.2,"mature_deliv_pct":11.8,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"","dip_days":7,"sent_baseline":1100,"delivered_baseline":1066,"sent_dip":275,"delivered_dip":35,"sent_now":85,"delivered_now":7,"sent_7d":275,"delivered_7d":31,"atrisk_7d":244,"failed_7d":124,"overdue_7d":85,"inflight_7d":35,"sent_5d":195,"delivered_5d":20,"atrisk_5d":175,"failed_5d":89,"overdue_5d":61,"inflight_5d":25,"impact":209,"impact_5d":150,"country_sent_5d":468,"country_undeliv_5d":236,"txns_at_risk_hourly":0,"ttd_p50_h":31.0,"ttd_p90_h":96.0,"coming_out_of_downtime":false,"substitute_partner":"Partner 3","substitute_info":"{\"partner\": \"Partner 3\", \"id\": \"P3\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"LIMIT_EXCEEDED","n":89,"pct":51},{"code":"PARTNER_REJECTED","n":60,"pct":34},{"code":"Undefined","n":26,"pct":15}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]}]</script> block below.
+     Optional: window.SNAPSHOT = "2026-07-31 16:00 UTC";
+     Columns: rk, outage_status, impact, failed_7d, overdue_7d, inflight_7d,
+       atrisk_7d, tiers, country, destination, method, partner, substitute_partner,
+       deliv_pct_baseline, deliv_pct_during_dip, deliv_pct_now, sent_7d,
+       delivered_7d, sent_90d, dip_start_utc, dip_end_utc, dip_days, txns_at_risk_hourly
+     NOTE: rk is ignored — the board ranks WITHIN each page (ongoing / recovering).
+============================================================================ -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Destination Performance · Delivery Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Remitly brand — Indigo #494EB8 (midpoint of Remitly royal blue + royal purple) + supporting indigos */
+    --brand:#494EB8;
+    --brand-bright:#6B69E1;
+    --lilac:#ACB5F4;
+    --bg:#212A5E;
+    --ink:#181E39;
+    --surface:#FCFBFF;
+    --muted:#646783;
+    /* semantic (delivery health / alarm state) */
+    /* delivery health — tuned to sit against indigo: amber is indigo's complement (gold),
+       emerald + coral-red give clean contrast */
+    --red:#F0495A;
+    --amber:#F7B32B;
+    --green:#1FC77D;
+    --bubbly:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;      /* body */
+    --head:'Bungee','Barlow',cursive;                                      /* DELIVERY WATCH */
+    --sub:'Barlow Condensed','Barlow',sans-serif;                          /* labels / subheads */
+    --shadow:10px 10px 0 rgba(7,8,27,.55);
+    --shadow-lg:16px 16px 0 rgba(7,8,27,.5);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+  body{
+    font-family:var(--bubbly);color:#fff;min-height:100vh;overflow-x:hidden;
+    padding:clamp(16px,3.5vw,48px);
+    background:
+      radial-gradient(900px 620px at 8% -6%, rgba(73,78,184,.54), transparent 60%),
+      radial-gradient(820px 640px at 100% -4%, rgba(107,105,225,.36), transparent 55%),
+      radial-gradient(1000px 820px at 50% 122%, rgba(172,181,244,.24), transparent 55%),
+      repeating-linear-gradient(-45deg, rgba(110,116,184,.06) 0 8px, transparent 8px 30px),
+      var(--bg);
+    background-attachment:fixed;   /* anchor glows to the viewport so short pages (recovering) don't concentrate them */
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;max-width:1220px;margin:0 auto clamp(14px,2vw,22px)}
+  .kicker{
+    display:inline-block;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    font-size:clamp(11px,1.3vw,14px);color:#fff;background:var(--brand);
+    padding:8px 15px;border-radius:999px;transform:rotate(-2deg);
+  }
+  h1{font-family:var(--head);font-weight:400;line-height:1.04;font-size:clamp(46px,9.4vw,120px);letter-spacing:-.02em;margin:.2em 0 .16em;display:block;width:fit-content;max-width:100%;position:relative;color:#fff;text-shadow:none}
+  /* DELIVERY = solid white; WATCH = white → indigo gradient */
+  h1 .a,h1 .b{position:relative}
+  h1 .a{color:#fff;-webkit-text-fill-color:#fff}
+  h1 .b{background:linear-gradient(96deg,#ffffff 0%,#D6DAFA 50%,#6B69E1 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+  /* OUTLINES behind each word: DELIVERY = near-black indigo (solid); WATCH = dark indigo → light gradient */
+  h1 .a::before{content:"DELIVERY";position:absolute;left:8px;top:10px;z-index:-1;pointer-events:none;
+     -webkit-text-stroke:7px #130E38;color:#130E38;-webkit-text-fill-color:#130E38}
+  h1 .b::before{content:"WATCH";position:absolute;left:8px;top:10px;z-index:-1;pointer-events:none;
+     -webkit-text-stroke:7px transparent;
+     background:linear-gradient(96deg,#2A3068 0%,#4E4FBE 52%,#C9CEF7 100%);
+     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+  .sub{font-weight:600;font-size:clamp(15px,2vw,23px);max-width:42ch;line-height:1.16;color:#DEE0F5;margin-left:calc(clamp(46px,9.4vw,120px)*.0625)}
+  .sub b{color:var(--lilac)}
+  .snap{margin-top:8px;font-weight:600;font-size:13px;color:#9EA0C6}
+  .snap code{background:rgba(255,255,255,.1);padding:1px 8px;border-radius:7px;font-family:ui-monospace,Menlo,Consolas,monospace}
+  .pills{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+  .pill{display:flex;flex-direction:column;gap:2px;min-width:130px;background:rgba(255,255,255,.06);border:3px solid rgba(255,255,255,.14);border-radius:20px;padding:11px 18px}
+  .pill .n{font-weight:800;font-size:clamp(24px,3.2vw,38px);line-height:1}
+  .pill .k{font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#B9BDDD}
+  .pill.on .n{color:var(--red)} .pill.re .n{color:var(--amber)} .pill.im .n{color:var(--lilac)}
+
+  /* ---------- METHOD / how to read this ---------- */
+  details.method{
+    max-width:1220px;margin:clamp(16px,2.2vw,24px) auto 0;background:rgba(255,255,255,.12);
+    border:3px solid rgba(172,181,244,.3);border-radius:22px;overflow:hidden;
+  }
+  details.method>summary{
+    cursor:pointer;list-style:none;padding:16px 22px;font-weight:600;font-size:clamp(15px,2vw,23px);text-transform:lowercase;
+    color:#fff;display:flex;align-items:center;gap:10px;user-select:none;
+  }
+  details.method>summary::-webkit-details-marker{display:none}
+  details.method>summary .mk{color:var(--lilac);transition:transform .2s}
+  details.method[open]>summary .mk{transform:rotate(90deg)}
+  details.method>summary .tagline{font-weight:600;font-size:13px;color:#ABAED0;margin-left:auto}
+  details.method>summary .howtxt{-webkit-text-stroke:0;text-transform:lowercase}
+  .method-body{padding:2px 22px 22px;color:#DEE0F5;font-weight:500;font-size:14.5px;line-height:1.5}
+  .method-body h4{font-weight:800;font-size:13.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--lilac);margin:16px 0 6px}
+  .method-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 26px}
+  @media (max-width:760px){.method-grid{grid-template-columns:1fr}}
+  .method-body b{color:#fff}
+  .mrow{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+  .mrow .term{font-weight:800;color:#fff}
+  .tierdef{display:flex;gap:9px;align-items:flex-start;padding:5px 0}
+  .tierdef .badge{flex:0 0 auto;font-weight:800;font-size:11px;letter-spacing:.04em;color:#fff;background:var(--brand);padding:4px 10px;border-radius:999px;margin-top:1px}
+
+  /* ---------- TABS ---------- */
+  .tabs{display:flex;align-items:center;gap:14px;max-width:1220px;margin:clamp(16px,2.2vw,24px) auto clamp(12px,1.8vw,20px);flex-wrap:wrap}
+  .tabs .slowtoggle{margin-left:auto;margin-right:2px}
+  .tab{
+    cursor:pointer;font-weight:800;font-size:clamp(15px,1.9vw,21px);color:#1D1937;border:4px solid #1D1937;
+    border-radius:999px;padding:11px 22px;box-shadow:6px 6px 0 rgba(7,8,27,.5);transform:rotate(-1deg);
+    transition:transform .16s cubic-bezier(.34,1.6,.5,1),box-shadow .16s,filter .16s;user-select:none;
+  }
+  .tab .dot{display:inline-block;width:9px;height:9px;border-radius:999px;margin-right:9px;vertical-align:middle}
+  /* sort switch — round on/off toggle between two labels */
+  .sortbar{display:flex;align-items:center;justify-content:center;gap:13px;max-width:1220px;margin:0 auto clamp(14px,2vw,22px)}
+  .sortbar .sortlab{font-family:var(--sub);font-weight:700;font-size:14px;letter-spacing:.03em;text-transform:uppercase;color:#A3B6D4;transition:color .16s;cursor:pointer;user-select:none}
+  .sortbar .sortlab.on{color:#fff}
+  .switch{position:relative;width:60px;height:30px;border-radius:999px;border:3px solid var(--ink);background:var(--brand);cursor:pointer;padding:0;flex:0 0 auto;box-shadow:4px 4px 0 rgba(7,8,27,.35);transition:background .18s}
+  .switch .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:999px;background:#fff;border:2px solid var(--ink);transition:transform .2s cubic-bezier(.34,1.6,.5,1)}
+  .switch[aria-checked="true"] .knob{transform:translateX(30px)}
+  /* impact total moved under the bar (Worst-performance sort) */
+  .belowbar{margin-top:8px;font-family:var(--sub);font-weight:700;font-size:13px;letter-spacing:.01em;text-transform:uppercase;color:var(--muted)}
+  .belowbar b{color:var(--ink);font-weight:800}
+  .tab.ongoing{background:radial-gradient(rgba(0,0,0,.2) .8px,transparent 1.1px) 0 0/9px 9px, var(--red)} .tab.ongoing .dot{background:#5a0006}
+  .tab.recovering{background:radial-gradient(rgba(0,0,0,.2) .8px,transparent 1.1px) 0 0/9px 9px, var(--amber)} .tab.recovering .dot{background:#5a3c00}
+  .tab:hover{transform:rotate(0) translateY(-3px) scale(1.03);box-shadow:9px 11px 0 rgba(7,8,27,.55)}
+  .tab[aria-selected="false"]{filter:grayscale(.55) opacity(.7);box-shadow:4px 4px 0 rgba(7,8,27,.4);transform:rotate(0) scale(.96)}
+  .tab .c{background:rgba(0,0,0,.18);border-radius:999px;padding:2px 11px;margin-left:10px;font-size:.82em}
+
+  /* ---------- BOARD ---------- */
+  .board{max-width:1220px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(16px,2.2vw,28px)}
+  .board[hidden]{display:none}
+  @media (max-width:860px){.board{grid-template-columns:1fr}}
+  .card{
+    position:relative;background:var(--surface);color:var(--ink);border-radius:26px;
+    padding:clamp(18px,2vw,26px) clamp(18px,2vw,26px) clamp(14px,1.6vw,20px);
+    border:4px solid var(--ink);box-shadow:var(--shadow);
+    transition:transform .18s cubic-bezier(.34,1.5,.5,1),box-shadow .18s;
+  }
+  .card:nth-child(3n+1){transform:rotate(-1deg)} .card:nth-child(3n+2){transform:rotate(.8deg)} .card:nth-child(3n){transform:rotate(-.4deg)}
+  .card:hover{transform:rotate(0) translateY(-6px);box-shadow:var(--shadow-lg)}
+  .card.ongoing{border-color:var(--red)} .card.recovering{border-color:var(--amber)}
+  .card .stripe{position:absolute;left:-4px;top:22px;bottom:22px;width:8px;border-radius:999px}
+  .card.ongoing .stripe{background:var(--red)} .card.recovering .stripe{background:var(--amber)}
+  .rk{position:absolute;top:10px;right:16px;z-index:1;font-weight:800;font-size:clamp(38px,4.6vw,60px);line-height:.8;-webkit-text-stroke:2.5px #C4C7DA;color:#C4C7DA;opacity:1}
+  /* thumbtack — pins each card to the "wall" */
+  .card::before{content:"";position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:26px;height:26px;border-radius:50%;background:var(--brand);border:3px solid var(--lilac);box-shadow:3px 4px 0 rgba(7,8,27,.32);z-index:4}
+  .card.ongoing::before{background:var(--red);border-color:#A82A38}
+  .card.recovering::before{background:var(--amber);border-color:#B0790F}
+  /* dotted "notebook" corner, top-right (behind the rank), fading out before the text */
+  .card::after{content:"";position:absolute;top:6px;right:6px;width:308px;height:265px;pointer-events:none;z-index:0;
+    border-top-right-radius:20px;
+    background-image:radial-gradient(rgba(73,78,184,.28) 1.2px, transparent 1.7px);background-size:11px 11px;background-position:right top;
+    -webkit-mask-image:radial-gradient(285px 245px at 100% 0%, #000 0%, #000 38%, transparent 78%);
+    mask-image:radial-gradient(285px 245px at 100% 0%, #000 0%, #000 38%, transparent 78%)}
+
+  .statusrow{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .status{display:inline-flex;align-items:center;gap:7px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:12px;padding:5px 12px;border-radius:999px;border:2.5px solid currentColor}
+  .status.ongoing{color:var(--red)} .status.recovering{color:var(--amber)}
+  /* "coming out of downtime" note — recovering routes whose dip coincided with a Remitly partner downtime */
+  .dtnote{position:relative;display:inline-flex;align-items:center;gap:6px;font-family:var(--sub);font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:11px;padding:4px 11px;border-radius:999px;color:#5a4300;background:#FFE7A6;border:2.5px solid #E0A21C;cursor:help}
+  .dtnote .arc{font-size:13px;line-height:1}
+  .dtnote[data-tip]::after{content:attr(data-tip);position:absolute;left:0;bottom:calc(100% + 9px);width:max-content;max-width:250px;white-space:normal;text-align:left;background:var(--ink);color:#fff;font-family:var(--bubbly);font-weight:600;font-size:11.5px;line-height:1.4;padding:9px 11px;border-radius:11px;opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .18s,transform .18s;box-shadow:5px 6px 0 rgba(7,8,27,.32);z-index:6}
+  .dtnote[data-tip]:hover::after{opacity:1;transform:translateY(0)}
+  /* "slow — processing lag" tag + typical-processing-time footnote (SLOW routes, Kara Walters 2026-08-05) */
+  .slownote{position:relative;display:inline-flex;align-items:center;gap:6px;font-family:var(--sub);font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:11px;padding:4px 11px;border-radius:999px;color:#123047;background:#CFE6FA;border:2.5px solid #4B9FD8;cursor:help}
+  .slownote .arc{font-size:13px;line-height:1}
+  .slownote[data-tip]::after{content:attr(data-tip);position:absolute;left:0;bottom:calc(100% + 9px);width:max-content;max-width:260px;white-space:normal;text-align:left;background:var(--ink);color:#fff;font-family:var(--bubbly);font-weight:600;font-size:11.5px;line-height:1.4;padding:9px 11px;border-radius:11px;opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .18s;box-shadow:5px 6px 0 rgba(7,8,27,.32);z-index:6}
+  .slownote[data-tip]:hover::after{opacity:1;transform:translateY(0)}
+  .procnote{margin-top:9px;font-weight:600;font-size:12.5px;color:var(--muted);line-height:1.45}
+  .procnote b{color:var(--ink)}
+  .procnote .pk{font-family:var(--sub);text-transform:uppercase;letter-spacing:.04em;font-weight:800;color:#1c5c8a;margin-right:5px}
+  .status .blink{width:9px;height:9px;border-radius:999px;background:currentColor}
+  .card.ongoing .status .blink{animation:blink 1.1s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+
+  .dest{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:800;font-size:clamp(20px,2.3vw,28px);line-height:1.02;margin:.14em 0 .04em}
+  .dest .destname{flex:1 1 auto;min-width:0}
+  .route{font-weight:600;color:var(--muted);font-size:14px;margin:4px 0 10px 4px}
+  .route b{color:var(--ink)}
+
+  .impactwrap{display:flex;align-items:center;gap:14px;margin:16px 0 16px}
+  .impact{font-weight:800;font-size:clamp(44px,5.6vw,68px);line-height:.85;letter-spacing:-.02em}
+  .card.ongoing .impact{color:var(--red)} .card.recovering .impact{color:#b9791b}
+  /* subheading / label font (Barlow Condensed) — keeps uppercase micro-labels narrow so they fit the card */
+  .kicker,.method-body h4,.status,.pill .k,.stat .k,.jlab,.dlab,.ftkick,.impact-k{font-family:var(--sub)}
+  .impact-k{font-weight:600;font-size:13px;line-height:1.12;letter-spacing:.01em;color:var(--muted);max-width:22ch;text-transform:uppercase}
+  .impact-k b{color:var(--ink)}
+
+  /* ---------- CHIPS ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px}
+  .chip{position:relative;font-weight:700;font-size:12.5px;padding:6px 12px;border-radius:999px;background:#EBECF9;color:var(--ink);border:2px solid rgba(25,30,57,.14);cursor:default;box-shadow:3px 3px 0 rgba(25,30,57,.12);transition:transform .22s cubic-bezier(.34,1.7,.5,1),box-shadow .22s,background .22s,color .22s;overflow:hidden;white-space:nowrap}
+  .chip:hover{transform:translateY(-4px) scale(1.08);box-shadow:5px 7px 0 rgba(25,30,57,.2)}
+  /* delivery chips: colored + fill-sweep */
+  .chip.deliv{border-color:transparent;color:#fff;--mx:50%;--my:50%}
+  .chip.deliv .lab{font-weight:700;opacity:.9;margin-right:5px;font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+  .chip.deliv.good{background:var(--green)} .chip.deliv.mid{background:var(--amber);color:#4a3200} .chip.deliv.bad{background:var(--red)} .chip.deliv.na{background:#C8CCE2;color:#30354F}
+  .chip.deliv::before{content:"";position:absolute;inset:0;background:rgba(255,255,255,.4);opacity:0;pointer-events:none;clip-path:circle(0 at var(--mx) var(--my));transition:clip-path .72s cubic-bezier(.3,1,.4,1),opacity .3s}
+  .chip.deliv:hover::before{opacity:1;clip-path:circle(140% at var(--mx) var(--my))}
+  .chip.deliv span{position:relative}
+  /* reroute chip: glow + swap spin */
+  .chip.reroute{background:linear-gradient(90deg,var(--brand),var(--brand-bright));color:#fff;border-color:rgba(0,0,0,.12);font-weight:800;cursor:pointer}
+  .chip.reroute .swap{display:inline-block;transition:transform .5s cubic-bezier(.34,1.7,.5,1)}
+  .chip.reroute:hover{box-shadow:0 0 0 3px rgba(73,78,184,.3),5px 7px 0 rgba(25,30,57,.2)}
+  .chip.reroute:hover .swap{transform:rotate(360deg)}
+  /* country chip: flip */
+  .chip.geo{background:#1D1937;color:#fff;border-color:rgba(255,255,255,.12);letter-spacing:.05em;box-shadow:none;cursor:pointer}
+  .chip.geo:hover{background:var(--brand);border-color:var(--lilac);box-shadow:0 0 0 3px rgba(172,181,244,.32),5px 7px 0 rgba(25,30,57,.2)}
+  /* currency chip: white with a black outline, non-interactive (display only) */
+  .chip.ccy{background:#fff;color:#111;border:2px solid #000;letter-spacing:.05em;box-shadow:none;cursor:default}
+  .chip.ccy:hover{transform:none;box-shadow:none}
+  /* clickable definition popovers (hover animates, click explains) */
+  .chip[data-pop]{cursor:pointer}
+  .chip[data-pop].pop-active{outline:3px solid rgba(73,78,184,.55);outline-offset:2px}
+  #dpa-pop{position:fixed;z-index:50;max-width:262px;background:var(--ink);color:#fff;font-family:var(--bubbly);font-weight:600;font-size:12.5px;line-height:1.45;padding:11px 13px;border-radius:12px;box-shadow:6px 8px 0 rgba(7,8,27,.42);opacity:0;transform:translateY(6px) scale(.98);pointer-events:none;transition:opacity .16s,transform .16s}
+  #dpa-pop.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+  #dpa-pop .pt{display:block;font-weight:800;color:var(--lilac);margin-bottom:4px;font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+
+  /* ---------- delivery journey (labelled) ---------- */
+  .journey{margin:4px 0 2px}
+  .journey .jlab{font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+
+  /* ---------- decomposition bar ---------- */
+  .decomp{margin:12px 0 8px}
+  .decomp .dlab{font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .decomp .bar{height:16px;border-radius:999px;overflow:hidden;display:flex;border:2.5px solid var(--ink);background:#E8EAF6}
+  .decomp .seg{height:100%;transition:flex-grow .3s}
+  .decomp .seg.f{background:var(--red)} .decomp .seg.o{background:var(--amber)} .decomp .seg.i{background:#BFC3DA}
+  .decomp .seg.ud{background:var(--red)} .decomp .seg.dl{background:var(--green)}
+  .decomp .key{display:flex;gap:14px;flex-wrap:wrap;margin-top:7px;font-weight:700;font-size:11.5px;color:var(--muted)}
+  .decomp .key i{font-style:normal;display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  .decomp .key .f i{background:var(--red)} .decomp .key .o i{background:var(--amber)} .decomp .key .i i{background:#BFC3DA}
+  .decomp .key .ud i{background:var(--red)} .decomp .key .dl i{background:var(--green)}
+  .decomp .key .tot{font-weight:800;color:var(--ink)} .decomp .key .tot i{background:var(--ink)}
+
+  /* ---------- stat grid ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+  .stat{position:relative;background:#EEEFFB;border:2px solid rgba(25,30,57,.1);border-radius:14px;padding:8px 10px;text-align:center}
+  /* partner name — clickable link to "other failing destinations on this partner" */
+  .route .partnerlink{color:var(--ink);font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-decoration-thickness:2px;text-underline-offset:3px}
+  .route .partnerlink:hover{color:var(--brand)}
+  .stat .v{font-weight:800;font-size:16px;line-height:1}
+  .stat .k{font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:3px}
+  /* hourly bubble — distinct Remitly-purple fill */
+  .stat.hourly{background:var(--brand);border-color:rgba(0,0,0,.12)}
+  .stat.hourly .v{color:#fff} .stat.hourly .k{color:#DEDDF6}
+  .stat.hourly.na{background:#EBECF9;cursor:help} .stat.hourly.na .v{color:#9EA0C6;text-decoration:underline dotted;text-decoration-thickness:1.5px;text-underline-offset:3px} .stat.hourly.na .k{color:var(--muted)}
+  .stat.hourly[data-tip]::after{content:attr(data-tip);position:absolute;right:-2px;bottom:calc(100% + 9px);width:min(232px,74vw);white-space:normal;text-align:left;background:var(--ink);color:#fff;font-size:11px;font-weight:600;line-height:1.4;padding:9px 11px;border-radius:11px;opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .18s,transform .18s;box-shadow:5px 6px 0 rgba(7,8,27,.32);z-index:6}
+  .stat.hourly[data-tip]:hover::after{opacity:1;transform:translateY(0)}
+
+  /* ---------- card footers ---------- */
+  .dipwin{margin-top:11px;font-weight:600;font-size:13px;color:var(--muted)}
+  .dipwin b{color:var(--ink)}
+  .flagged{margin-top:9px;padding-top:9px;border-top:2px dashed rgba(25,30,57,.14);font-weight:700;font-size:12px;color:var(--brand);line-height:1.7;cursor:help;position:relative}
+  .flagged[data-tip]::after{content:attr(data-tip);position:absolute;left:0;bottom:calc(100% + 8px);width:max-content;max-width:260px;background:var(--ink);color:#fff;font-family:var(--bubbly);font-weight:600;font-size:11.5px;line-height:1.4;padding:8px 11px;border-radius:11px;box-shadow:5px 6px 0 rgba(7,8,27,.32);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .16s,transform .16s;z-index:6}
+  .flagged[data-tip]:hover::after{opacity:1;transform:translateY(0)}
+  .flagged .flag{font-size:13px;margin-right:5px}
+  .flagged .flagbadge{display:inline-block;font-weight:800;font-size:11px;letter-spacing:.04em;color:#fff;background:var(--brand);padding:4px 10px;border-radius:999px;text-decoration:none;cursor:pointer;transition:transform .16s cubic-bezier(.34,1.7,.5,1),box-shadow .16s}
+  .flagged .flagbadge:hover{transform:translateY(-2px) scale(1.07);box-shadow:3px 4px 0 rgba(25,30,57,.25)}
+
+  /* ---------- empty ---------- */
+  .empty{grid-column:1/-1;text-align:center;color:#D2D4EA;background:rgba(255,255,255,.05);border:3px dashed rgba(255,255,255,.18);border-radius:26px;padding:clamp(30px,6vw,70px)}
+  .empty h3{font-weight:800;font-size:clamp(20px,3vw,30px);margin-bottom:8px;color:#fff}
+  .empty code{background:rgba(255,255,255,.12);padding:2px 8px;border-radius:7px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9em}
+
+  .legend{max-width:1220px;margin:clamp(18px,2.6vw,30px) auto 0;color:#ABAED0;font-weight:600;font-size:13px;line-height:1.5;text-align:center}
+  .legend b{color:#fff}
+  /* ---------- failure-types chip + centered modal ---------- */
+  .chip.faildex{background:#1D1937;color:#fff;border-color:rgba(255,255,255,.14);font-weight:800;cursor:pointer}
+  .chip.faildex:hover{transform:translateY(-4px) scale(1.08) rotate(-1.5deg);box-shadow:0 0 0 3px rgba(245,166,35,.32),5px 7px 0 rgba(14,19,51,.2)}
+  .chip.samplefail{background:#0F6E56;color:#fff;border-color:rgba(255,255,255,.14);font-weight:800;cursor:pointer}
+  .chip.samplefail:hover{transform:translateY(-4px) scale(1.08) rotate(1.2deg);box-shadow:0 0 0 3px rgba(31,199,125,.34),5px 7px 0 rgba(14,19,51,.2)}
+  .infobody .iv.ref{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;letter-spacing:.01em}
+  .iv.ref a.reflink{color:inherit;text-decoration:none;border-bottom:1.5px dashed currentColor;padding-bottom:1px;transition:opacity .12s,border-bottom-color .12s}
+  .iv.ref a.reflink:hover,.iv.ref a.reflink:focus-visible{opacity:.7;border-bottom-style:solid}
+  .iv.ref a.reflink{position:relative}
+  .iv.ref a.reflink .refarrow{font-size:11px;margin-left:5px;vertical-align:super;opacity:.65}
+  .iv.ref a.reflink[data-tip]::after{content:attr(data-tip);position:absolute;right:-2px;bottom:calc(100% + 9px);width:max-content;white-space:nowrap;text-align:left;background:var(--ink);color:#fff;font-family:var(--bubbly);font-weight:600;font-size:11.5px;line-height:1.4;letter-spacing:0;padding:8px 11px;border-radius:11px;box-shadow:5px 6px 0 rgba(7,8,27,.32);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .16s,transform .16s;z-index:8}
+  .iv.ref a.reflink[data-tip]:hover::after,.iv.ref a.reflink[data-tip]:focus-visible::after{opacity:1;transform:translateY(0)}
+  .ftmodal{position:absolute;top:0;left:0;width:100%;z-index:100;padding:0;background:rgba(9,10,28,.62);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s}
+  .ftmodal.show{opacity:1;pointer-events:auto}
+  .ftcard{position:relative;width:min(540px,94vw);max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:4px solid var(--brand);border-radius:24px;box-shadow:16px 16px 0 rgba(5,7,25,.5);padding:26px 24px 20px;transform:translateY(16px) scale(.95);transition:transform .24s cubic-bezier(.34,1.55,.5,1)}
+  .ftmodal.show .ftcard{transform:none}
+  /* notebook dots in the top-right corner of every popup card (fades before the text) */
+  .ftcard::after{content:"";position:absolute;top:8px;right:8px;width:233px;height:185px;pointer-events:none;z-index:0;border-top-right-radius:20px;
+    background-image:radial-gradient(rgba(73,78,184,.26) 1.2px, transparent 1.7px);background-size:11px 11px;background-position:right top;
+    -webkit-mask-image:radial-gradient(215px 173px at 100% 0%, #000 0%, #000 36%, transparent 78%);mask-image:radial-gradient(215px 173px at 100% 0%, #000 0%, #000 36%, transparent 78%)}
+  .ftcard>*{position:relative;z-index:1}
+  .ftx{position:absolute;top:12px;right:14px;z-index:2;width:34px;height:34px;border-radius:999px;border:3px solid var(--ink);background:#fff;font-size:20px;font-weight:800;line-height:1;cursor:pointer;color:var(--ink);transition:transform .15s,background .15s}
+  .ftx:hover{background:var(--brand);color:#fff;border-color:var(--brand);transform:rotate(90deg)}
+  .ftkick{font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand)}
+  .ftttl{font-weight:800;font-size:clamp(20px,3vw,26px);line-height:1.05;margin:2px 0 2px;padding-right:30px}
+  .ftsub{font-weight:600;color:var(--muted);font-size:13px;margin-bottom:16px}
+  .ftlist{display:flex;flex-direction:column;gap:13px}
+  .ftrow{animation:ftin .32s both}
+  @keyframes ftin{0%{opacity:0;transform:translateX(-10px)}100%{opacity:1;transform:none}}
+  .ftrowtop{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:5px}
+  .ftcode{font-weight:700;font-size:13.5px;line-height:1.25}
+  .ftn{font-weight:800;font-size:13px;color:var(--brand);white-space:nowrap}
+  .ftbar{height:13px;border-radius:999px;background:#E8EAF6;border:2.5px solid var(--ink);overflow:hidden}
+  .ftfill{height:100%;width:0;background:linear-gradient(90deg,var(--red),var(--amber));transition:width .55s cubic-bezier(.3,1,.4,1)}
+  .ftnote{margin-top:16px;font-weight:600;font-size:11.5px;color:var(--muted);line-height:1.45;border-top:2px dashed rgba(25,30,57,.14);padding-top:10px}
+  /* generic info-modal rows (country / reroute) */
+  .inforow{display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid rgba(25,30,57,.1)}
+  .inforow:last-child{border-bottom:none}
+  .inforow .il{font-weight:600;color:var(--muted);font-size:13px}
+  .inforow .iv{font-weight:800;font-size:16px;color:var(--ink);white-space:nowrap}
+  .inforow .iv.good{color:var(--green)} .inforow .iv.bad{color:var(--red)} .inforow .iv.mid{color:#b9791b} .inforow .iv.brand{color:var(--brand)}
+  /* "show slow destinations" filter toggle — sits on the right of the tabs row */
+  .slowtoggle{display:inline-flex;align-items:center;gap:8px;color:#EDEEFB;font-weight:700;font-size:13.5px;cursor:pointer;user-select:none}
+  .slowtoggle input{width:16px;height:16px;accent-color:var(--brand-bright);cursor:pointer}
+  /* mature-delivery colouring in the processing-time footnote */
+  .procnote .md{font-weight:800}
+  .procnote .md.good{color:var(--green)} .procnote .md.mid{color:#b9791b} .procnote .md.bad{color:var(--red)}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+
+  /* ---- refresh screensaver: a swirl shown while the sources load ---- */
+  #loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+    background:
+      radial-gradient(900px 620px at 8% -6%, rgba(73,78,184,.60), transparent 60%),
+      radial-gradient(820px 640px at 100% -4%, rgba(107,105,225,.42), transparent 55%),
+      radial-gradient(1000px 820px at 50% 122%, rgba(172,181,244,.26), transparent 55%),
+      var(--bg);
+    transition:opacity .55s ease, visibility .55s ease}
+  #loader.done{opacity:0;visibility:hidden}
+  .swirlwrap{display:flex;flex-direction:column;align-items:center;gap:28px}
+  .swirl{position:relative;width:min(46vmin,300px);aspect-ratio:1;display:grid;place-items:center}
+  .swirl i{position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(from 0deg, transparent 0 12%, var(--brand-bright) 32%, var(--lilac) 55%, transparent 72% 100%);
+    -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+            mask:radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+    animation:swirlspin 2.4s cubic-bezier(.62,.03,.38,.97) infinite}
+  .swirl i:nth-child(2){inset:17%;filter:hue-rotate(20deg);opacity:.85;animation-duration:1.8s;animation-direction:reverse}
+  .swirl i:nth-child(3){inset:34%;filter:hue-rotate(-14deg);opacity:.7;animation-duration:1.35s}
+  .swirl .core{position:absolute;width:13%;aspect-ratio:1;border-radius:50%;background:var(--lilac);box-shadow:0 0 26px 6px rgba(172,181,244,.55);animation:swirlpulse 1.4s ease-in-out infinite}
+  .swirl-cap{font-family:var(--sub);font-weight:800;letter-spacing:.24em;text-transform:uppercase;font-size:13px;color:var(--lilac);animation:swirlpulse 1.4s ease-in-out infinite}
+  @keyframes swirlspin{to{transform:rotate(360deg)}}
+  @keyframes swirlpulse{0%,100%{opacity:.5;transform:scale(.92)}50%{opacity:1;transform:scale(1.06)}}
+  @media (prefers-reduced-motion:reduce){.swirl i,.swirl .core,.swirl-cap{animation:none}}
+</style>
+
+<div id="loader" role="status" aria-label="Loading sources">
+  <div class="swirlwrap">
+    <div class="swirl"><i></i><i></i><i></i><span class="core"></span></div>
+    <div class="swirl-cap">Loading sources…</div>
+  </div>
+</div>
+
+<h2 class="sr-only">Remitly destination-performance dashboard: payout routes with degraded delivery, split into ongoing and recovering, ranked by undelivered transfers in the last 5 days.</h2>
+
+<div class="hero">
+  <h1><span class="a">DELIVERY</span> <span class="b">WATCH</span></h1>
+  <p class="sub">Payout routes where transfers are <b>failing to reach recipients</b>, ranked by how many deliveries were lost in the <b>last 5 days</b>.</p>
+  <div class="snap" id="snap"></div>
+</div>
+
+<details class="method" open id="howto">
+  <summary><span class="mk">▶</span> <span class="howtxt">How to read this board</span> <span class="tagline">what every number means</span></summary>
+  <div class="method-body">
+    <p>This board watches <b>payout delivery</b> — whether the money a customer sent actually reaches the recipient. Each card is one <b>route</b>: a receiving bank/wallet (the <b>destination</b>), the <b>partner</b> that delivers to it, and the <b>method</b> (bank deposit, cash pickup, home delivery). A route appears here only when its delivery is degraded. <b>All counts are the last 5 days; all times are UTC.</b></p>
+
+    <h4>The two pages</h4>
+    <div class="method-grid">
+      <div class="mrow"><span class="term">Ongoing</span> — still failing right now (delivery over the last 2 days is under 50%).</div>
+      <div class="mrow"><span class="term">Recovering</span> — bouncing back (last-2-day delivery is 50–85%, not yet fully healthy).</div>
+    </div>
+
+    <h4>The big number — Lost transfers</h4>
+    <p><b>Lost transfers = undelivered transfers in the last 5 days</b> that are either <b>failed</b> (cancelled or terminated — they will never arrive) or <b>overdue</b> (past their promised delivery time). It is a count of <b>real customer transfers that did not get delivered</b>, and it's what the list is ranked by <i>within each page</i> (also called <b>Impact</b>). Transfers still moving <i>within</i> their promised window are <b>not</b> counted — that's normal settlement lag, not a failure.</p>
+
+    <h4>Delivery rate — three moments</h4>
+    <div class="method-grid">
+      <div class="mrow"><span class="term">Normal</span> — the route's healthy delivery rate 30–90 days ago (before the drop).</div>
+      <div class="mrow"><span class="term">Since the dip</span> — the delivery rate across this route's dip window, from when it dropped through now (or through recovery).</div>
+      <div class="mrow"><span class="term">Now</span> — delivery rate over the last 2 days (the current state).</div>
+    </div>
+    <p style="margin-top:6px">Colored <b style="color:var(--green)">green ≥85%</b>, <b style="color:var(--amber)">amber 50–85%</b>, <b style="color:var(--red)">red &lt;50%</b>.</p>
+
+    <h4>Slow vs failing — mature delivery rate (delivery% including late)</h4>
+    <p><b>Mature delivery rate</b> is the delivery rate among transfers that have <b>had a fair chance to land</b>, judged against each route's <i>own</i> normal speed — not a fixed clock or the promised date. A transfer counts once it has <b>concluded</b>: delivered, failed/cancelled, or been pending longer than this route usually takes (its 95th-percentile delivery time, learned from 30–90 days of history). Transfers still moving within that normal time are excluded. We look only at transfers that <b>concluded in the last ~7 days</b>, so it reflects the <i>current</i> state, not a stale historical average. Colored the same green / amber / red as the delivery rates.</p>
+    <p style="margin-top:6px">This is how we separate a <b>slow</b> destination from a <b>failing</b> one. A route is tagged <b>⧗ slow — processing lag</b> when its <b>mature delivery rate is 70% or higher</b>: transfers are still landing once they conclude, so the low live rate is just processing lag, not an outage. Trinidad bank deposits, for example, take ~5 days to deliver, so their <b>live</b> rate reads near 0% while transfers are still legitimately in flight — but once those transfers conclude they arrive ~95%+, so the mature delivery rate stays high and the route is tagged slow. A genuinely <b>failing</b> route has a mature delivery rate <b>below 70%</b> <i>even at its own pace</i>. Each card also shows the route's <b>typical processing time</b> (p50 / p90). Untick <b>Show slow destinations</b> to hide the slow ones and keep only real failures. When too few transfers have concluded yet to judge, a route is left in view rather than hidden.</p>
+
+    <h4>The bar — delivered vs undelivered <i>since the dip</i></h4>
+    <p>Splits every transfer <b>from the dip's start through now</b> into <b style="color:var(--green)">delivered</b> and <b style="color:var(--red)">undelivered</b> — the whole break (its length in days is in the label), not a fixed trailing window. For recovered routes it covers the dip window itself.</p>
+
+    <h4>Reroute & Hourly@risk</h4>
+    <div class="method-grid">
+      <div class="mrow"><span class="term">Reroute</span> — a currently-healthy alternate partner already serving the same destination + method you could shift volume to.</div>
+      <div class="mrow"><span class="term">Hourly@risk</span> — the most transfers caught in a single bad hour (how sharp the spike was). "n/a" = too low-volume for the hourly check.</div>
+    </div>
+
+    <h4>How a route gets flagged — the three checks</h4>
+    <div class="tierdef"><span class="badge">Hourly</span><span>A sharp within-day plunge on a very high-volume destination (≥200 transfers at risk in a consecutive-hour burst).</span></div>
+    <div class="tierdef"><span class="badge">Incident</span><span>One clearly-bad day (delivery &lt;40% with ≥50 transfers at risk) on a mid-size route, versus its healthy 30–90d baseline.</span></div>
+    <div class="tierdef"><span class="badge">Sustained</span><span>A slow multi-day bleed on a smaller route (7-day delivery &lt;50% across ≥3 bad days). Catches low-volume outages the other two miss.</span></div>
+
+    <h4>Cash pickup — 3-day maturity window</h4>
+    <p><b>Cash Pick-up</b> routes run noisier and settle slower than bank deposit, so a fresh dip is often just settlement noise rather than a real outage. A cash-pickup route is therefore held back until its dip has been running <b>at least 3 days</b> — the outage only <b>flags once it's mature</b>. Bank Deposit and Home Delivery flag immediately, as before.</p>
+  </div>
+</details>
+
+<div class="tabs" role="tablist">
+  <div class="tab ongoing"    role="tab" id="tab-ongoing"    aria-selected="true"  data-page="ongoing"><span class="dot"></span>Ongoing<span class="c" id="c-on">0</span></div>
+  <div class="tab recovering" role="tab" id="tab-recovering" aria-selected="false" data-page="recovering"><span class="dot"></span>Recovering<span class="c" id="c-re">0</span></div>
+  <label class="slowtoggle" title="Slow routes have low live delivery only because they process slowly (high delivered-incl.-late). Untick to hide them and keep only real failures."><input type="checkbox" id="showslow" checked> Show slow destinations</label>
+</div>
+
+<div class="sortbar">
+  <span class="sortlab" id="sl-impact" data-mode="impact">Lost transfers</span>
+  <button class="switch" id="sortswitch" role="switch" aria-checked="true" aria-label="Sort by lost transfers or worst performance"><span class="knob"></span></button>
+  <span class="sortlab on" id="sl-now" data-mode="now">Worst performance</span>
+</div>
+
+<main class="board" id="board-ongoing"    role="tabpanel" aria-labelledby="tab-ongoing"></main>
+<main class="board" id="board-recovering" role="tabpanel" aria-labelledby="tab-recovering" hidden></main>
+
+<p class="legend"><b>Impact</b> = failed + overdue transfers, last 5 days (transfers that didn't reach the recipient). Times UTC · ranked within each page. <b>Tip:</b> tap any colored chip for more information. Remitly Indigo #494EB8.</p>
+<p class="legend" style="max-width:920px;font-size:12px;opacity:.92"><b>About “⚠ Top failure types.”</b> For every transfer that did not reach the recipient in the last 5 days (final state failed, cancelled, undelivered, or reversed), we take the <b>last partner error code</b> recorded across its disbursement lifecycle — the terminal state itself often carries no code, so we look back for the reason that caused it. Codes are grouped, glossed to plain language, and shown as a share of that route's undelivered transfers. <b>“Undefined”</b> means no error code was recorded in Trino (or live COFFEE) — typically customer cancellations or silent drops. Reasons are at <b>destination × partner</b> grain — matched to the partner actually routing this card (joined on partnercatalog <code>partner_id</code>), so they reflect that partner specifically rather than a blend across the method. Source: <code>uel.disbursement_transaction_lifecycle</code>.</p>
+
+<!-- DATA INJECTION POINT — ships empty. Replace [] with the query result, or set window.ROWS. -->
+<script id="dpa-data" type="application/json">[{"country":"MEX","destination":"Bank 1","institution_code":"MEX_BANK_1","name":"Bank 1","partner":"Partner 1","method":"BANK_DEPOSIT","currency":"USD","outage_status":"ongoing","perf_class":"critical","deliv_pct_baseline":97.4,"deliv_pct_during_dip":4.6,"deliv_pct_now":2.1,"mature_deliv_pct":3.5,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"","dip_days":6,"sent_baseline":7360,"delivered_baseline":7169,"sent_dip":1840,"delivered_dip":85,"sent_now":520,"delivered_now":11,"sent_7d":1840,"delivered_7d":71,"atrisk_7d":1769,"failed_7d":1097,"overdue_7d":531,"inflight_7d":141,"sent_5d":1310,"delivered_5d":42,"atrisk_5d":1268,"failed_5d":786,"overdue_5d":380,"inflight_5d":102,"impact":1628,"impact_5d":1166,"country_sent_5d":3144,"country_undeliv_5d":1711,"txns_at_risk_hourly":11,"ttd_p50_h":4.2,"ttd_p90_h":26.8,"coming_out_of_downtime":false,"substitute_partner":"Partner 4","substitute_info":"{\"partner\": \"Partner 4\", \"id\": \"P4\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"PARTNER_REJECTED","n":786,"pct":62},{"code":"ACCOUNT_INVALID","n":380,"pct":30},{"code":"Undefined","n":102,"pct":8}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]},{"country":"PHL","destination":"Bank 2","institution_code":"PHL_BANK_2","name":"Bank 2","partner":"Partner 2","method":"CASH_PICKUP","currency":"USD","outage_status":"ongoing","perf_class":"critical","deliv_pct_baseline":96.1,"deliv_pct_during_dip":9.2,"deliv_pct_now":4.8,"mature_deliv_pct":7.7,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"","dip_days":3,"sent_baseline":3680,"delivered_baseline":3536,"sent_dip":920,"delivered_dip":85,"sent_now":310,"delivered_now":15,"sent_7d":920,"delivered_7d":72,"atrisk_7d":848,"failed_7d":466,"overdue_7d":280,"inflight_7d":102,"sent_5d":660,"delivered_5d":45,"atrisk_5d":615,"failed_5d":338,"overdue_5d":203,"inflight_5d":74,"impact":746,"impact_5d":541,"country_sent_5d":1584,"country_undeliv_5d":830,"txns_at_risk_hourly":5,"ttd_p50_h":6.8,"ttd_p90_h":34.0,"coming_out_of_downtime":false,"substitute_partner":"Partner 5","substitute_info":"{\"partner\": \"Partner 5\", \"id\": \"P5\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"ACCOUNT_INVALID","n":295,"pct":48},{"code":"PARTNER_REJECTED","n":240,"pct":39},{"code":"Undefined","n":80,"pct":13}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]},{"country":"IND","destination":"Bank 3","institution_code":"IND_BANK_3","name":"Bank 3","partner":"Partner 3","method":"BANK_DEPOSIT","currency":"USD","outage_status":"ongoing","perf_class":"degraded","deliv_pct_baseline":98.0,"deliv_pct_during_dip":17.4,"deliv_pct_now":11.3,"mature_deliv_pct":15.7,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"","dip_days":4,"sent_baseline":5240,"delivered_baseline":5135,"sent_dip":1310,"delivered_dip":228,"sent_now":380,"delivered_now":43,"sent_7d":1310,"delivered_7d":204,"atrisk_7d":1106,"failed_7d":531,"overdue_7d":442,"inflight_7d":133,"sent_5d":940,"delivered_5d":132,"atrisk_5d":808,"failed_5d":388,"overdue_5d":323,"inflight_5d":97,"impact":973,"impact_5d":711,"country_sent_5d":2256,"country_undeliv_5d":1090,"txns_at_risk_hourly":7,"ttd_p50_h":3.1,"ttd_p90_h":18.2,"coming_out_of_downtime":false,"substitute_partner":"Partner 6","substitute_info":"{\"partner\": \"Partner 6\", \"id\": \"P6\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"PARTNER_REJECTED","n":444,"pct":55},{"code":"LIMIT_EXCEEDED","n":218,"pct":27},{"code":"ACCOUNT_INVALID","n":146,"pct":18}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]},{"country":"NGA","destination":"Bank 4","institution_code":"NGA_BANK_4","name":"Bank 4","partner":"Partner 4","method":"BANK_DEPOSIT","currency":"USD","outage_status":"recovering","perf_class":"degraded","deliv_pct_baseline":95.2,"deliv_pct_during_dip":40.9,"deliv_pct_now":79.5,"mature_deliv_pct":67.9,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"2026-08-12 00:00","dip_days":5,"sent_baseline":2560,"delivered_baseline":2437,"sent_dip":640,"delivered_dip":262,"sent_now":205,"delivered_now":163,"sent_7d":640,"delivered_7d":336,"atrisk_7d":304,"failed_7d":134,"overdue_7d":103,"inflight_7d":67,"sent_5d":455,"delivered_5d":283,"atrisk_5d":172,"failed_5d":76,"overdue_5d":58,"inflight_5d":38,"impact":237,"impact_5d":134,"country_sent_5d":1092,"country_undeliv_5d":232,"txns_at_risk_hourly":0,"ttd_p50_h":9.5,"ttd_p90_h":47.5,"coming_out_of_downtime":false,"substitute_partner":"Partner 1","substitute_info":"{\"partner\": \"Partner 1\", \"id\": \"P1\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"ACCOUNT_INVALID","n":76,"pct":44},{"code":"Undefined","n":53,"pct":31},{"code":"PARTNER_REJECTED","n":43,"pct":25}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]},{"country":"JAM","destination":"Bank 5","institution_code":"JAM_BANK_5","name":"Bank 5","partner":"Partner 5","method":"CASH_PICKUP","currency":"USD","outage_status":"recovering","perf_class":"degraded","deliv_pct_baseline":93.8,"deliv_pct_during_dip":52.2,"deliv_pct_now":87.9,"mature_deliv_pct":75.2,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"2026-08-12 00:00","dip_days":2,"sent_baseline":1640,"delivered_baseline":1538,"sent_dip":410,"delivered_dip":214,"sent_now":140,"delivered_now":123,"sent_7d":410,"delivered_7d":258,"atrisk_7d":152,"failed_7d":88,"overdue_7d":41,"inflight_7d":23,"sent_5d":295,"delivered_5d":212,"atrisk_5d":83,"failed_5d":48,"overdue_5d":22,"inflight_5d":13,"impact":129,"impact_5d":70,"country_sent_5d":708,"country_undeliv_5d":112,"txns_at_risk_hourly":0,"ttd_p50_h":2.4,"ttd_p90_h":12.9,"coming_out_of_downtime":false,"substitute_partner":"Partner 2","substitute_info":"{\"partner\": \"Partner 2\", \"id\": \"P2\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"PARTNER_REJECTED","n":59,"pct":71},{"code":"ACCOUNT_INVALID","n":16,"pct":19},{"code":"Undefined","n":8,"pct":10}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]},{"country":"GTM","destination":"Bank 6","institution_code":"GTM_BANK_6","name":"Bank 6","partner":"Partner 6","method":"HOME_DELIVERY","currency":"USD","outage_status":"ongoing","perf_class":"degraded","deliv_pct_baseline":96.9,"deliv_pct_during_dip":12.7,"deliv_pct_now":8.2,"mature_deliv_pct":11.8,"dip_start_utc":"2026-08-07 00:00","dip_end_utc":"","dip_days":7,"sent_baseline":1100,"delivered_baseline":1066,"sent_dip":275,"delivered_dip":35,"sent_now":85,"delivered_now":7,"sent_7d":275,"delivered_7d":31,"atrisk_7d":244,"failed_7d":124,"overdue_7d":85,"inflight_7d":35,"sent_5d":195,"delivered_5d":20,"atrisk_5d":175,"failed_5d":89,"overdue_5d":61,"inflight_5d":25,"impact":209,"impact_5d":150,"country_sent_5d":468,"country_undeliv_5d":236,"txns_at_risk_hourly":0,"ttd_p50_h":31.0,"ttd_p90_h":96.0,"coming_out_of_downtime":false,"substitute_partner":"Partner 3","substitute_info":"{\"partner\": \"Partner 3\", \"id\": \"P3\", \"r90\": 97.8, \"r5\": 98.3, \"s90\": 41200}","failure_types":[{"code":"LIMIT_EXCEEDED","n":89,"pct":51},{"code":"PARTNER_REJECTED","n":60,"pct":34},{"code":"Undefined","n":26,"pct":15}],"sample_failures":[{"code":"E100","ref":"##########"},{"code":"E101","ref":"##########"},{"code":"E102","ref":"##########"}]}]</script>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(s,r){return (r||document).querySelector(s);};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var num=function(v){var n=Number(v); return isNaN(n)?'—':n.toLocaleString('en-US');};
+  // sent/delivered ratio line for a delivery-rate chip's tooltip, over that chip's own timeframe
+  function ratioLine(delivered, sent){
+    var s=Number(sent), d=Number(delivered);
+    if(isNaN(s)||s<=0) return 'No transfers sent in this window.';
+    if(isNaN(d)||d<0) d=0;
+    return 'Delivered '+num(d)+' of '+num(s)+' sent in this window.';
+  }
+  var TIER_NAME={H:'Hourly', I:'Incident', S:'Sustained'};
+  // Cash-pickup maturity window — cash pickup runs noisier/slower than bank deposit, so a
+  // fresh dip is often just settlement noise. Suppress a Cash Pick-up route from the board
+  // until its dip has been running (or ran) at least this many days, so the outage only
+  // flags once it's mature. Bank Deposit / Home Delivery are unaffected.
+  var CASHPICKUP_MATURITY_DAYS=3;
+  function isImmatureCashPickup(r){
+    if(String(r.method||'').toLowerCase().replace(/[^a-z]/g,'')!=='cashpickup') return false;
+    if(r.dip_days==null||r.dip_days==='') return false;   // unknown age -> don't over-suppress a possible real outage
+    var d=Number(r.dip_days);
+    return !isNaN(d) && d<CASHPICKUP_MATURITY_DAYS;
+  }
+  var FLAGGED={};   // country|method -> # flagged destinations on the board (filled in run())
+  var SORTMODE='now';   // default: 'now' (Worst performance) | 'impact' (Lost transfers)
+  var BYPARTNER={};   // partner -> [{code,country,method,status,now,impact}] (filled in run())
+  var POP={
+    geo:['Receive country','Where the transfer is going (ISO-3 code). Delivery problems here are on the receiving side, independent of where the money was sent from.'],
+    reroute:['Reroute','A partner already serving this exact destination and method that is healthy right now (its delivery rate is shown). Shift volume here to restore deliveries while the failing partner is fixed.'],
+    normal:['Normal delivery','The route’s healthy delivery rate 30–90 days ago, before the drop.'],
+    'since the dip':['Since the dip','Delivery rate across this route’s dip window — from when it dropped through now (or recovery). Each card shows the exact window.'],
+    now:['Now','Delivery rate over the last 2 days — the current state.']
+  };
+  function popAttr(k){ var p=POP[k]; return p?(' data-poptitle="'+esc(p[0])+'" data-pop="'+esc(p[1])+'"'):''; }
+
+  // Mode's HTML editor exposes every query result as a global `datasets` array;
+  // each dataset's `.content` holds the rows. This lets the board follow the
+  // query with no Python / no injection. Standalone use still works via
+  // window.ROWS or the #dpa-data JSON block below.
+  function _fromMode(){
+    if (typeof datasets==='undefined' || !datasets) return null;
+    var arr = Array.isArray(datasets) ? datasets
+            : (typeof datasets==='object' ? Object.keys(datasets).map(function(k){return datasets[k];}) : []);
+    var pick=null,i,d,nm;
+    for (i=0;i<arr.length;i++){ d=arr[i]; if(!d) continue; nm=String(d.queryName||d.name||d.query_name||'').toLowerCase();
+      if(nm.indexOf('dest perf')>=0 || nm.indexOf('fire list')>=0){ pick=d; break; } }
+    if(!pick) for (i=0;i<arr.length;i++){ if(arr[i] && (arr[i].content||arr[i].rows)){ pick=arr[i]; break; } }
+    if(!pick) pick=arr[0];
+    if(!pick) return null;
+    var content=pick.content||pick.rows||(Array.isArray(pick)?pick:null);
+    if(!content||!content.length) return content||null;
+    if (Array.isArray(content[0])){                              // rows-as-arrays + columns
+      var cols=(pick.columns||[]).map(function(c){return c&&(c.name||c.title)||c;});
+      return content.map(function(a){var o={}; cols.forEach(function(n,idx){o[n]=a[idx];}); return o;});
+    }
+    return content;                                              // rows-as-objects
+  }
+  function loadRows(){
+    if (Array.isArray(window.ROWS)) return window.ROWS;          // explicit override / standalone
+    var m=_fromMode(); if (Array.isArray(m)) return m;           // Mode query result
+    var el=document.getElementById('dpa-data');                 // inline JSON fallback
+    if (el){ try{ var j=JSON.parse((el.textContent||'').trim()||'[]'); if(Array.isArray(j)) return j; }catch(e){} }
+    return [];
+  }
+  function prettyDest(destination, country){
+    var s=String(destination||'');
+    if (country && s.indexOf(country+'_')===0) s=s.slice(country.length+1);
+    return s.replace(/_/g,' ').toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});
+  }
+  function delivClass(v){ if(v==null||v===''){return 'na';} var n=Number(v); if(isNaN(n)){return 'na';} return n<50?'bad':(n<85?'mid':'good'); }
+  function delivChip(lab,v,po,delivered,sent){
+    var pa = po ? (' data-poptitle="'+esc(po.title)+'" data-pop="'+esc(po.body)+'"') : popAttr(lab);
+    var s=Number(sent), d=Number(delivered); if(isNaN(d)||d<0) d=0;
+    var pc=(!isNaN(s)&&s>0)?(' data-popcount="'+esc('Delivered '+num(d)+' of '+num(s)+' sent')+'"'):'';
+    if (v==null||v===''||isNaN(Number(v))) return '<span class="chip deliv na"'+pa+pc+'><span><span class="lab">'+lab+'</span>n/a</span></span>';
+    return '<span class="chip deliv '+delivClass(v)+'"'+pa+pc+'><span><span class="lab">'+lab+'</span>'+Number(v).toFixed(1)+'%</span></span>';
+  }
+  function flaggedLine(tiers){
+    var names=String(tiers||'').split('').filter(Boolean).map(function(t){return TIER_NAME[t]||t;});
+    if(!names.length) return '';
+    var word=names.length>1?'checks':'check';
+    var badges=names.map(function(n){
+      return '<a class="flagbadge" href="#howto">'+esc(n)+'</a>';
+    }).join(' + ');
+    return '<div class="flagged" data-tip="See “How to read this board”"><span class="flag">⚑</span>Flagged by the '+badges+' '+word+'</div>';
+  }
+
+  function card(r, rank){
+    var st=String(r.outage_status||'').toLowerCase();
+    var cls=st==='ongoing'?'ongoing':'recovering';
+    var cood=r.coming_out_of_downtime;
+    var comingOutDowntime=(cood===true||cood===1||cood==='true'||cood==='1'||cood==='t');
+    var dtNote=comingOutDowntime
+      ? '<span class="dtnote" data-tip="This route’s dip coincided with a Remitly-initiated partner downtime that has since ended — it’s now recovering."><span class="arc">↩</span> coming out of downtime</span>'
+      : '';
+    var pc=String(r.perf_class||'').toUpperCase();
+    function fmtDur(h){h=Number(h);if(!h||isNaN(h)||h<=0)return 'n/a';if(h>=48)return (h/24).toFixed(1)+'d';if(h>=1)return Math.round(h)+'h';return '<1h';}
+    var ttp50=fmtDur(r.ttd_p50_h), ttp90=fmtDur(r.ttd_p90_h);
+    var mdp=(r.mature_deliv_pct==null||r.mature_deliv_pct===''||isNaN(Number(r.mature_deliv_pct)))?null:Number(r.mature_deliv_pct);
+    var slowNote=(pc==='SLOW')
+      ? '<span class="slownote" data-tip="This destination always runs a long lag between disbursement and completion, so the live delivery rate reads low even though transfers are still in flight, not failing. Mature delivery (transfers past their promise) stays high — treat as processing lag, not an outage."><span class="arc">⧗</span> slow — processing lag</span>'
+      : '';
+    var mdCls=(mdp==null)?'':(mdp>=85?'good':(mdp>=50?'mid':'bad'));
+    var mdStr=(mdp!=null)?(' · <span class="pk">Mature delivery rate:</span> <b class="md '+mdCls+'">'+mdp.toFixed(0)+'%</b>'):'';
+    var procNote=(ttp50!=='n/a'||mdp!=null)
+      ? '<div class="procnote"><span class="pk">Typical processing time:</span> '+ttp50+' (p50) — '+ttp90+' (p90)'+mdStr+'</div>'
+      : '';
+    var destCode = r.destination || r.institution_code || '';   // Mode aliases it 'destination'; findings/base SQL name it 'institution_code'
+    var sub=r.substitute_partner;
+    var reroute='';
+    if(sub&&sub!=='none'){
+      var si=r.substitute_info; if(typeof si==='string'){ try{ si=JSON.parse(si); }catch(_e){ si=null; } }
+      var dsub = si ? (' data-sub="'+esc(JSON.stringify({partner:si.partner,id:si.id,r90:si.r90,r5:si.r5,s90:si.s90,dest:prettyDest(destCode,r.country),method:r.method}))+'"') : '';
+      reroute='<div class="chips"><span class="chip reroute" role="button" tabindex="0"'+dsub+'><span class="swap">↻</span> reroute → '+esc(sub)+'</span></div>';
+    }
+    var f=Number(r.failed_5d!=null?r.failed_5d:r.failed_7d)||0,o=Number(r.overdue_5d!=null?r.overdue_5d:r.overdue_7d)||0,i=Number(r.inflight_5d!=null?r.inflight_5d:r.inflight_7d)||0;
+    var atr=Number(r.atrisk_5d!=null?r.atrisk_5d:r.atrisk_7d)||0;
+    var imp=Number(r.impact_5d!=null?r.impact_5d:r.impact)||0;
+    var s5=(r.sent_5d!=null?r.sent_5d:r.sent_7d), d5v=(r.delivered_5d!=null?r.delivered_5d:r.delivered_7d);
+    var hourlyOK=(r.txns_at_risk_hourly&&Number(r.txns_at_risk_hourly)>0);
+    var HOURLY_NA_TIP='No hourly reading — this route is too low-volume for the within-day check (it never has 3+ transfers in a single hour, so no hourly spike can register). It was caught by a daily check instead.';
+    var hourly=hourlyOK
+      ? '<div class="stat hourly"><div class="v">'+num(r.txns_at_risk_hourly)+'</div><div class="k">Hourly@risk</div></div>'
+      : '<div class="stat hourly na" data-tip="'+esc(HOURLY_NA_TIP)+'"><div class="v">n/a</div><div class="k">Hourly@risk</div></div>';
+    var dip=(st==='ongoing')
+      ? 'Outage started <b>'+esc(r.dip_start_utc||'—')+' UTC</b> · running <b>'+num(r.dip_days)+' day(s)</b>'
+      : 'Outage <b>'+esc(r.dip_start_utc||'—')+'</b> → <b>'+esc(r.dip_end_utc||'—')+'</b> · <b>'+num(r.dip_days)+' day(s)</b>';
+    var isOngoing = st==='ongoing';
+    var ft=r.failure_types;
+    if(typeof ft==='string'){ try{ ft=JSON.parse(ft); }catch(_e){ ft=[]; } }
+    if(!Array.isArray(ft)) ft=[];
+    var samples=r.sample_failures;
+    if(typeof samples==='string'){ try{ samples=JSON.parse(samples); }catch(_e){ samples=[]; } }
+    if(!Array.isArray(samples)) samples=[];
+    var ftchip = ft.length ? ('<span class="chip faildex" role="button" tabindex="0"'
+      +' data-ft="'+esc(JSON.stringify(ft))+'"'
+      +' data-fttitle="'+esc(prettyDest(destCode,r.country)+' \u00b7 '+(r.partner||''))+'"'
+      +' data-ftsub="'+esc('last 5 days \u00b7 '+num(atr)+' undelivered transfers')+'">'
+      +'\u26a0 Top failure types</span>') : '';
+    // sample-failure token: ongoing outages only \u2014 3 real reference numbers to look up in COFFEE
+    var sampTok = (isOngoing && samples.length) ? ('<span class="chip samplefail" role="button" tabindex="0"'
+      +' data-samples="'+esc(JSON.stringify(samples))+'"'
+      +' data-samptitle="'+esc(prettyDest(destCode,r.country)+' \u00b7 '+(r.partner||''))+'">'
+      +'\ud83d\udd0d '+samples.length+' sample failures</span>') : '';
+    var ftrow = (ftchip||sampTok) ? ('<div class="chips">'+ftchip+sampTok+'</div>') : '';
+    var dipLabel = isOngoing ? 'since the dip' : 'dip';
+    var dipStart = r.dip_start_utc ? String(r.dip_start_utc) : '\u2014';
+    var dipEnd = r.dip_end_utc ? String(r.dip_end_utc) : null;
+    var dipDays = Number(r.dip_days)||0;
+    var firstDipPop = isOngoing
+      ? {title:'Since the dip', body:'Delivery from when this route dropped ('+dipStart+' UTC) through now \u2014 '+dipDays+' day(s) and counting. While the outage is ongoing this is always measured dip start \u2192 now.'}
+      : {title:'Dip', body:'Delivery across this route\u2019s dip window: '+dipStart+' \u2192 '+(dipEnd||'\u2014')+' UTC ('+dipDays+' day(s)). The dip has since recovered.'};
+    var normalPop={title:'Normal delivery', body: POP['normal'][1]};
+    var nowPop={title:'Now', body: POP['now'][1]};
+    var geoData = esc(JSON.stringify({country:r.country,method:r.method,cm_sent:Number(r.country_sent_5d)||0,cm_undeliv:Number(r.country_undeliv_5d)||0,flagged:FLAGGED[(r.country||'')+'|'+(r.method||'')]||1}));
+    // headline number depends on the sort mode
+    var nowPct=(r.deliv_pct_now==null||r.deliv_pct_now===''||isNaN(Number(r.deliv_pct_now)))?null:Number(r.deliv_pct_now);
+    var headline, totKey='';
+    if(SORTMODE==='now'){
+      var sn=(r.sent_now!=null&&r.sent_now!=='')?r.sent_now:s5;   // "now" window sent (matches the % timeframe)
+      headline='<div class="impactwrap"><span class="impact">'+(nowPct==null?'n/a':nowPct.toFixed(1)+'%')+'</span>'+
+        '<span class="impact-k">delivered<br>out of '+num(sn)+' sent<br>(last 2 days)</span></div>';
+      totKey='<span class="tot"><i></i>'+num(atr)+' total undelivered</span>';   // sits to the right of in-flight
+    }else{
+      headline='<div class="impactwrap"><span class="impact">'+num(imp)+'</span>'+
+        '<span class="impact-k"><b>lost transfers</b><br>failed + overdue · last 5 days</span></div>';
+    }
+
+    // bar: delivered vs undelivered across the dip window (matches the BIN Checkup scheme)
+    var bs = Number(r.sent_dip)||0, bd = Number(r.delivered_dip)||0;
+    if(bd>bs) bd=bs;
+    var bu = Math.max(0, bs-bd);
+    return ''+
+    '<section class="card '+cls+'">'+
+      '<div class="stripe"></div>'+
+      '<div class="rk">#'+rank+'</div>'+
+      '<div class="statusrow"><span class="status '+cls+'"><span class="blink"></span>'+esc(r.outage_status||'')+'</span>'+dtNote+slowNote+'</div>'+
+      '<div class="dest">'+(r.country?('<span class="chip geo" role="button" tabindex="0" data-geo="'+geoData+'">'+esc(r.country)+'</span>'):'')+(r.currency?('<span class="chip ccy">'+esc(r.currency)+'</span>'):'')+'<span class="destname">'+esc(prettyDest(destCode,r.country))+'</span></div>'+
+      '<div class="route">via <span class="partnerlink" role="button" tabindex="0" data-partner="'+esc(r.partner||'')+'" data-self="'+esc(destCode)+'">'+esc(r.partner||'')+'</span> · '+esc(r.method||'')+'</div>'+
+      headline+
+      '<div class="journey"><div class="jlab">Delivery rate: normal → '+dipLabel+' → now</div>'+
+        '<div class="chips">'+delivChip('normal',r.deliv_pct_baseline,normalPop,r.delivered_baseline,r.sent_baseline)+delivChip(dipLabel,r.deliv_pct_during_dip,firstDipPop,r.delivered_dip,r.sent_dip)+delivChip('now',r.deliv_pct_now,nowPop,r.delivered_now,r.sent_now)+'</div></div>'+
+      reroute+
+      '<div class="decomp"><div class="dlab">Transfers <i>since</i> the '+(isOngoing?'dip':'first dip')+' ('+num(dipDays)+(dipDays===1?' day':' days')+'): delivered / undelivered</div>'+
+        '<div class="bar"><div class="seg dl" style="flex-grow:'+bd+'"></div><div class="seg ud" style="flex-grow:'+bu+'"></div></div>'+
+        '<div class="key"><span class="dl"><i></i>'+num(bd)+' delivered'+((bd+bu)>0?' ('+(100*bd/(bd+bu)).toFixed(1)+'%)':'')+'</span><span class="ud"><i></i>'+num(bu)+' undelivered</span><span class="tot"><i></i>'+num(bd+bu)+' sent</span></div></div>'+
+      ftrow+
+      '<div class="dipwin">🕒 '+dip+'</div>'+
+      procNote+
+      '<div class="stats">'+
+        '<div class="stat"><div class="v">'+num(s5)+'</div><div class="k">Sent 5d</div></div>'+
+        '<div class="stat"><div class="v">'+num(d5v)+'</div><div class="k">Delivered 5d</div></div>'+
+        '<div class="stat"><div class="v">'+num(atr)+'</div><div class="k">Undelivered 5d</div></div>'+
+        hourly+
+      '</div>'+
+      flaggedLine(r.tiers)+
+    '</section>';
+  }
+
+  function imp5(r){ return Number(r.impact_5d!=null?r.impact_5d:r.impact)||0; }
+  function rankSort(a,b){
+    return imp5(b)-imp5(a)
+        || (Number(b.failed_5d!=null?b.failed_5d:b.failed_7d)||0)-(Number(a.failed_5d!=null?a.failed_5d:a.failed_7d)||0)
+        || (Number(b.atrisk_5d!=null?b.atrisk_5d:b.atrisk_7d)||0)-(Number(a.atrisk_5d!=null?a.atrisk_5d:a.atrisk_7d)||0);
+  }
+  function activeSort(a,b){
+    if(SORTMODE==='now'){
+      var av=(a.deliv_pct_now==null||a.deliv_pct_now===''||isNaN(Number(a.deliv_pct_now)))?Infinity:Number(a.deliv_pct_now);
+      var bv=(b.deliv_pct_now==null||b.deliv_pct_now===''||isNaN(Number(b.deliv_pct_now)))?Infinity:Number(b.deliv_pct_now);
+      return av-bv || imp5(b)-imp5(a);   // worst delivery first
+    }
+    return rankSort(a,b);
+  }
+  function fillBoard(el,rows,label){
+    if(!rows.length){ el.innerHTML='<div class="empty"><h3>No '+label+' routes 🎉</h3><p>Nothing degrading here right now — or no data injected. Feed rows via <code>window.ROWS</code> or the <code>#dpa-data</code> JSON block.</p></div>'; return; }
+    rows.sort(activeSort);                                  // rank WITHIN the category, by the active sort mode
+    el.innerHTML=rows.map(function(r,idx){return card(r,idx+1);}).join('');
+  }
+
+  var _pop=null,_anchor=null;
+  function initPop(){
+    if(_pop) return;
+    _pop=document.createElement('div'); _pop.id='dpa-pop'; document.body.appendChild(_pop);
+    function hide(){ _pop.classList.remove('show'); if(_anchor){ _anchor.classList.remove('pop-active'); _anchor=null; } }
+    function show(chip){
+      var t=chip.getAttribute('data-poptitle')||'', b=chip.getAttribute('data-pop')||'', c=chip.getAttribute('data-popcount')||'';
+      _pop.innerHTML=(t?'<span class="pt">'+esc(t)+'</span>':'')+esc(b)+(c?'<br><b>'+esc(c)+'</b>':'');
+      _pop.classList.add('show');
+      var r=chip.getBoundingClientRect(), pw=_pop.offsetWidth, ph=_pop.offsetHeight;
+      var left=Math.min(Math.max(8,r.left), window.innerWidth-pw-8);
+      var top=r.bottom+10; if(top+ph>window.innerHeight-8) top=Math.max(8, r.top-ph-10);
+      _pop.style.left=left+'px'; _pop.style.top=top+'px';
+      chip.classList.add('pop-active'); _anchor=chip;
+    }
+    document.addEventListener('click',function(e){
+      var chip=e.target.closest?e.target.closest('.chip[data-pop]'):null;
+      if(chip){ e.preventDefault(); e.stopPropagation(); if(_anchor===chip){ hide(); } else { hide(); show(chip); } return; }
+      if(!(e.target.closest && e.target.closest('#dpa-pop'))) hide();
+    });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') hide(); });
+    window.addEventListener('scroll',hide,true); window.addEventListener('resize',hide);
+  }
+  // Mode renders HTML cells in an auto-height iframe (parent scrolls, not the iframe), so
+  // position:fixed centering lands over the whole tall iframe. Anchor the modal card to the
+  // clicked chip via document coordinates instead, and size the dim overlay to the full doc.
+  var _ANCHOR=null;
+  function _posModal(ov,anchor){
+    ov.style.height=Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)+'px';
+    var card=ov.querySelector('.ftcard'); if(!card) return;
+    requestAnimationFrame(function(){
+      var sx=window.pageXOffset||0, sy=window.pageYOffset||0, vw=window.innerWidth, vh=window.innerHeight;
+      var cw=card.offsetWidth, chh=card.offsetHeight;
+      var left=sx+Math.max(8,(vw-cw)/2), top;
+      if(anchor && anchor.getBoundingClientRect){ var rr=anchor.getBoundingClientRect(); top=sy+rr.bottom+10; }
+      else { top=sy+Math.max(16,(vh-chh)/2); }
+      var maxTop=Math.max(8,(parseFloat(ov.style.height)||0)-chh-8);
+      if(top>maxTop) top=maxTop;
+      card.style.position='absolute'; card.style.margin='0'; card.style.left=left+'px'; card.style.top=top+'px';
+    });
+  }
+  function initFail(){
+    if(document.getElementById('ftmodal')) return;
+    var ov=document.createElement('div'); ov.id='ftmodal'; ov.className='ftmodal';
+    ov.innerHTML='<div class="ftcard" role="dialog" aria-modal="true" aria-labelledby="ftttl">'
+      +'<button class="ftx" aria-label="Close">\u00d7</button>'
+      +'<div class="ftkick">Most common failure types</div>'
+      +'<h3 id="ftttl" class="ftttl"></h3><div class="ftsub"></div>'
+      +'<div class="ftlist"></div>'
+      +'<div class="ftnote">Share of this route\u2019s undelivered transfers in the last 5 days, grouped by the delivery system\u2019s failure reason (source: disbursement lifecycle error codes). Percentages are of the shown failures.</div>'
+      +'</div>';
+    document.body.appendChild(ov);
+    function close(){ ov.classList.remove('show'); }
+    ov.addEventListener('click',function(e){ if(e.target===ov || (e.target.closest && e.target.closest('.ftx'))) close(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
+    function open(chip){
+      var ft=[]; try{ ft=JSON.parse(chip.getAttribute('data-ft')||'[]'); }catch(_e){}
+      ft.sort(function(a,b){return (Number(b.n)||0)-(Number(a.n)||0);});
+      var tot=ft.reduce(function(a,x){return a+(Number(x.n)||0);},0)||1;
+      ov.querySelector('.ftttl').textContent=chip.getAttribute('data-fttitle')||'';
+      ov.querySelector('.ftsub').textContent=chip.getAttribute('data-ftsub')||'';
+      ov.querySelector('.ftlist').innerHTML = ft.map(function(x,idx){
+        var n=Number(x.n)||0, pct=Math.round(100*n/tot);
+        return '<div class="ftrow" style="animation-delay:'+(idx*45)+'ms">'
+          +'<div class="ftrowtop"><span class="ftcode">'+esc(x.code||x.label||'\u2014')+'</span>'
+          +'<span class="ftn">'+num(n)+' ('+pct+'%)</span></div>'
+          +'<div class="ftbar"><div class="ftfill" data-w="'+pct+'"></div></div></div>';
+      }).join('');
+      ov.classList.add('show');
+      requestAnimationFrame(function(){ var fills=ov.querySelectorAll('.ftfill'); for(var i=0;i<fills.length;i++){ fills[i].style.width=fills[i].getAttribute('data-w')+'%'; } });
+      _posModal(ov,chip);
+    }
+    document.addEventListener('click',function(e){
+      var chip=e.target.closest?e.target.closest('.chip.faildex'):null; if(!chip) return;
+      e.preventDefault(); e.stopPropagation(); open(chip);
+    });
+    document.addEventListener('keydown',function(e){
+      if((e.key==='Enter'||e.key===' ') && document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('faildex')){ e.preventDefault(); open(document.activeElement); }
+    });
+  }
+  function initInfo(){
+    if(document.getElementById('infomodal')) return;
+    var ov=document.createElement('div'); ov.id='infomodal'; ov.className='ftmodal';
+    ov.innerHTML='<div class="ftcard" role="dialog" aria-modal="true" aria-labelledby="infttl">'
+      +'<button class="ftx" aria-label="Close">×</button>'
+      +'<div class="ftkick"></div>'
+      +'<h3 id="infttl" class="ftttl"></h3><div class="ftsub"></div>'
+      +'<div class="infobody" style="margin-top:6px"></div>'
+      +'<div class="ftnote"></div></div>';
+    document.body.appendChild(ov);
+    function close(){ ov.classList.remove('show'); }
+    ov.addEventListener('click',function(e){ if(e.target===ov || (e.target.closest && e.target.closest('.ftx'))) close(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
+    function open(o){
+      ov.querySelector('.ftkick').textContent=o.kick||'';
+      ov.querySelector('.ftttl').textContent=o.title||'';
+      ov.querySelector('.ftsub').textContent=o.subtitle||'';
+      ov.querySelector('.infobody').innerHTML=(o.rows||[]).map(function(x,idx){
+        var _v = x.href ? ('<a class="reflink" data-tip="Open in COFFEE" href="'+esc(x.href)+'" target="_blank" rel="noopener">'+esc(x.value)+'<span class="refarrow" aria-hidden="true">\u2197</span></a>') : esc(x.value);
+        return '<div class="ftrow inforow" style="animation-delay:'+(idx*45)+'ms"><span class="il">'+esc(x.label)+'</span><span class="iv '+(x.cls||'')+'">'+_v+'</span></div>';
+      }).join('');
+      ov.querySelector('.ftnote').textContent=o.note||'';
+      ov.classList.add('show');
+      _posModal(ov,_ANCHOR);
+    }
+    function fromGeo(chip){
+      var g={}; try{ g=JSON.parse(chip.getAttribute('data-geo')||'{}'); }catch(_e){}
+      var sent=Number(g.cm_sent)||0, und=Number(g.cm_undeliv)||0, deliv=sent?100*(sent-und)/sent:null;
+      open({kick:'Country × method — last 5 days', title:(g.country||'')+' · '+(g.method||''),
+        subtitle:'All Remitly payouts to '+(g.country||'')+' via '+(g.method||''),
+        rows:[
+          {label:'Transactions sent (5d)', value:num(sent)},
+          {label:'Undelivered (5d)', value:num(und), cls:(deliv!=null&&deliv<50?'bad':'')},
+          {label:'Delivery rate (5d)', value:(deliv!=null?deliv.toFixed(1)+'%':'—'), cls:delivClass(deliv)},
+          {label:'Flagged destinations here', value:num(g.flagged)+' on the board', cls:'brand'}
+        ],
+        note:'Country-wide totals across every enabled destination on this method — not just the one on this card. “Flagged destinations” counts routes in '+(g.country||'')+' × '+(g.method||'')+' currently on this board.'});
+    }
+    function fromSub(chip){
+      var s={}; try{ s=JSON.parse(chip.getAttribute('data-sub')||'{}'); }catch(_e){}
+      open({kick:'Reroute candidate', title:s.partner||'—', subtitle:'Healthy alternate for '+(s.dest||'')+' · '+(s.method||''),
+        rows:[
+          {label:'Baseline delivery (90d)', value:(s.r90!=null?s.r90+'%':'—'), cls:delivClass(s.r90)},
+          {label:'Recent delivery (5d)', value:(s.r5!=null?s.r5+'%':'—'), cls:delivClass(s.r5)},
+          {label:'Proven volume (90d sent)', value:num(s.s90)},
+          {label:'Partner ID (COFFEE)', value:(s.id!=null?'#'+s.id:'—'), cls:'brand'}
+        ],
+        note:'Already serves the same institution + method and is healthy now — shift volume here while the failing partner is fixed. ID is the partnercatalog / COFFEE partner id.'});
+    }
+    function fromPartner(chip){
+      var pn=chip.getAttribute('data-partner')||'', self=chip.getAttribute('data-self')||'';
+      var list=(BYPARTNER[pn]||[]).filter(function(x){return x.code!==self;});
+      list.sort(function(a,b){return (Number(b.impact)||0)-(Number(a.impact)||0);});
+      var rws=list.map(function(x){
+        var nm=(x.country?x.country+' · ':'')+prettyDest(x.code,x.country)+' · '+x.method;
+        var nv=(x.now==null||x.now==='')?(x.status||'—'):(Number(x.now).toFixed(0)+'% now');
+        return {label:nm, value:nv, cls:(x.now==null||x.now==='')?'':delivClass(x.now)};
+      });
+      open({kick:'Other flagged destinations on this partner', title:pn||'—',
+        subtitle:list.length?(list.length+' other route'+(list.length>1?'s':'')+' on this board via '+pn):('No other flagged routes via '+pn),
+        rows:rws.length?rws:[{label:'No other flagged destinations on this partner right now.', value:'', cls:''}],
+        note:'Every other destination currently on this board (ongoing or recovering) delivered through '+pn+'. Several lighting up together usually points to a partner-wide issue.'});
+    }
+    function fromSamples(chip){
+      var arr=[]; try{ arr=JSON.parse(chip.getAttribute('data-samples')||'[]'); }catch(_e){}
+      var title=chip.getAttribute('data-samptitle')||'';
+      open({kick:'Sample failed transactions', title:title,
+        subtitle:arr.length+' recent failure'+(arr.length>1?'s':'')+' from this outage — reference numbers for COFFEE',
+        rows:arr.map(function(x){ return {label:(x.code||'—'), value:(x.ref||'—'), cls:'brand ref', href:(x.ref?('https://coffee.example.com/portal/pages/payout/transactions/search?q='+encodeURIComponent(x.ref)):null)}; }),
+        note:'Each value is the transfer’s reference number (public transaction ID) — click it to open the transfer in COFFEE for the full operation ledger. Sampled from this route’s failed transfers in the last 5 days.'});
+    }
+    document.addEventListener('click',function(e){
+      var g=e.target.closest?e.target.closest('.chip.geo'):null;
+      if(g){ e.preventDefault(); e.stopPropagation(); _ANCHOR=g; fromGeo(g); return; }
+      var s=e.target.closest?e.target.closest('.chip.reroute'):null;
+      if(s){ e.preventDefault(); e.stopPropagation(); _ANCHOR=s; fromSub(s); return; }
+      var sf=e.target.closest?e.target.closest('.chip.samplefail'):null;
+      if(sf){ e.preventDefault(); e.stopPropagation(); _ANCHOR=sf; fromSamples(sf); return; }
+      var pl=e.target.closest?e.target.closest('.partnerlink'):null;
+      if(pl){ e.preventDefault(); e.stopPropagation(); _ANCHOR=pl; fromPartner(pl); return; }
+    });
+    document.addEventListener('keydown',function(e){
+      if(e.key!=='Enter'&&e.key!==' ') return; var a=document.activeElement; if(!a||!a.classList) return;
+      if(a.classList.contains('geo')){ e.preventDefault(); _ANCHOR=a; fromGeo(a); }
+      else if(a.classList.contains('reroute')){ e.preventDefault(); _ANCHOR=a; fromSub(a); }
+      else if(a.classList.contains('samplefail')){ e.preventDefault(); _ANCHOR=a; fromSamples(a); }
+      else if(a.classList.contains('partnerlink')){ e.preventDefault(); _ANCHOR=a; fromPartner(a); }
+    });
+  }
+  function run(){
+    initPop();
+    initFail();
+    initInfo();
+    // shine-sweep origin = where the mouse first touches a delivery chip (fixed on entry, not followed)
+    var _shineChip=null;
+    document.addEventListener('pointerover', function(e){
+      var chip=e.target.closest?e.target.closest('.chip.deliv'):null;
+      if(chip && chip!==_shineChip){
+        var r=chip.getBoundingClientRect();
+        chip.style.setProperty('--mx',(e.clientX-r.left)+'px');
+        chip.style.setProperty('--my',(e.clientY-r.top)+'px');
+        _shineChip=chip;
+      } else if(!chip){ _shineChip=null; }
+    });
+    var rows=loadRows();
+    // Cash-pickup maturity window: drop Cash Pick-up routes whose dip hasn't matured 3 days
+    // yet — they haven't earned a flag. Applied before anything else so counts, reroute
+    // lists, and both boards treat them as not-on-the-board.
+    rows=rows.filter(function(r){ return !isImmatureCashPickup(r); });
+    FLAGGED={}; BYPARTNER={};
+    rows.forEach(function(r){
+      var k=(r.country||'')+'|'+(r.method||''); FLAGGED[k]=(FLAGGED[k]||0)+1;
+      var pn=r.partner||''; if(pn){ (BYPARTNER[pn]=BYPARTNER[pn]||[]).push({
+        code:(r.destination||r.institution_code||''), country:r.country||'', method:r.method||'',
+        status:String(r.outage_status||''), now:r.deliv_pct_now, impact:imp5(r)}); }
+    });
+    var ongoing=rows.filter(function(r){return String(r.outage_status||'').toUpperCase()==='ONGOING';});
+    var recovering=rows.filter(function(r){return String(r.outage_status||'').toUpperCase()==='RECOVERING';});
+    var impact=rows.reduce(function(a,r){return a+imp5(r);},0);
+
+    $('#c-on').textContent=ongoing.length;
+    $('#c-re').textContent=recovering.length;
+    $('#snap').innerHTML=window.SNAPSHOT?('snapshot <code>'+esc(window.SNAPSHOT)+'</code>'):'';
+
+    // "Show slow destinations" — when off, hide routes whose low live delivery is only
+    // processing lag (perf_class = SLOW: high mature delivery, not a real outage).
+    var SHOWSLOW=true;
+    function isSlow(r){ return String(r.perf_class||'').toUpperCase()==='SLOW'; }
+    function visible(arr){ return SHOWSLOW ? arr : arr.filter(function(r){ return !isSlow(r); }); }
+    function renderBoards(){
+      var on=visible(ongoing), re=visible(recovering);
+      fillBoard($('#board-ongoing'),on,'ongoing');
+      fillBoard($('#board-recovering'),re,'recovering');
+      $('#c-on').textContent=on.length;
+      $('#c-re').textContent=re.length;
+    }
+    var slowcb=$('#showslow');
+    if(slowcb) slowcb.addEventListener('change', function(){ SHOWSLOW=slowcb.checked; renderBoards(); });
+    renderBoards();
+
+    // sort switch: Lost transfers (impact) <-> Worst performance (now%)
+    var sw=$('#sortswitch'), slI=$('#sl-impact'), slN=$('#sl-now');
+    function applyMode(m){
+      SORTMODE=m;
+      if(sw) sw.setAttribute('aria-checked', String(m==='now'));
+      if(slI) slI.classList.toggle('on', m==='impact');
+      if(slN) slN.classList.toggle('on', m==='now');
+      renderBoards();
+    }
+    if(sw) sw.addEventListener('click', function(){ applyMode(SORTMODE==='now'?'impact':'now'); });
+    if(slI) slI.addEventListener('click', function(){ applyMode('impact'); });
+    if(slN) slN.addEventListener('click', function(){ applyMode('now'); });
+
+    var tabs=Array.prototype.slice.call(document.querySelectorAll('.tab'));
+    function show(page){
+      tabs.forEach(function(t){ t.setAttribute('aria-selected',String(t.dataset.page===page)); });
+      $('#board-ongoing').hidden=(page!=='ongoing');
+      $('#board-recovering').hidden=(page!=='recovering');
+    }
+    tabs.forEach(function(t){ t.addEventListener('click',function(){ show(t.dataset.page); }); });
+    show(ongoing.length>=recovering.length?'ongoing':'recovering');
+    _hideLoader();
+  }
+  var _loadStart=Date.now();
+  function _hideLoader(){
+    var el=document.getElementById('loader'); if(!el) return;
+    var wait=Math.max(0, 900-(Date.now()-_loadStart));   // keep the swirl up ~0.9s min so it's seen on refresh
+    setTimeout(function(){ el.classList.add('done'); }, wait);
+  }
+  setTimeout(function(){ var el=document.getElementById('loader'); if(el) el.classList.add('done'); }, 6000); // failsafe: never leave the swirl stuck
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run); else run();
+})();
+</script>
+
+<div id="preview-banner">
+  <b>PREVIEW — synthetic data.</b>
+  Partner, bank and issuer names are placeholders; card BINs are non-routable test
+  numbers; every transaction reference is masked. Connect this cell to its Mode query
+  to see live data.
+</div>
+<script id="preview-banner-js">
+(function(){
+  // Hide the notice the moment real Mode data is present.
+  function live(){
+    try{
+      var d = window.datasets;
+      if(d && d.length){
+        for(var i=0;i<d.length;i++){
+          var c = d[i] && d[i].content;
+          if(c && c.length) return true;
+        }
+      }
+    }catch(e){}
+    return false;
+  }
+  function apply(){
+    var b = document.getElementById('preview-banner');
+    if(b && live()) b.style.display='none';
+  }
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+  setTimeout(apply, 800);
+})();
+</script>

@@ -1,0 +1,388 @@
+
+<style id="preview-banner-css">
+#preview-banner{position:fixed;left:0;right:0;bottom:0;z-index:99999;
+ background:#1c1917;color:#fafaf9;font:500 12px/1.5 ui-sans-serif,system-ui,sans-serif;
+ padding:8px 14px;text-align:center;letter-spacing:.02em;
+ border-top:2px solid #f59e0b;box-shadow:0 -2px 12px rgba(0,0,0,.25)}
+#preview-banner b{color:#fbbf24}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#FFC83D; --brand-bright:#FFC768; --brand-deep:#B9741A; --cream:#FFE9BE;
+  --bg:#EFA637; --ink:#1B1304; --surface:#FFFDF6; --muted:#8A7550; --grid:#EADFC8;
+  --red:#E5484D; --gold:#D98E12; --gold-deep:#5A4300; --slate:#6B7280; --green:#2E8B57;
+  --bubbly:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --head:'Bungee','Barlow',cursive;
+  --sub:'Barlow Condensed','Barlow',sans-serif;
+  --shadow:8px 8px 0 rgba(10,7,0,.5); --shadow-sm:5px 5px 0 rgba(10,7,0,.4);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--bubbly);color:var(--ink);min-height:100vh;overflow-x:hidden;padding:clamp(16px,3.5vw,48px);
+  background:radial-gradient(rgba(255,255,255,.20) 1.5px, transparent 2.1px) 0 0 / 24px 24px, var(--bg);background-attachment:fixed;}
+.wrap{max-width:1280px;margin:0 auto}
+.kicker{display:inline-block;font-family:var(--sub);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:clamp(11px,1.3vw,14px);color:var(--ink);background:radial-gradient(rgba(0,0,0,.16) .8px,transparent 1.1px) 0 0/9px 9px, var(--brand);border:4px solid var(--ink);padding:8px 16px;border-radius:999px;box-shadow:var(--shadow-sm);transform:rotate(-2deg)}
+h1{font-family:var(--head);font-weight:400;line-height:1.04;font-size:clamp(40px,8vw,104px);letter-spacing:-.02em;margin:.24em 0 .18em;width:fit-content;max-width:100%;position:relative;color:#fff}
+h1 .a,h1 .b{position:relative}
+h1 .b{background:none;color:#241701;-webkit-text-fill-color:#241701}
+h1 .a::before{content:"BIN";position:absolute;left:7px;top:9px;z-index:-1;-webkit-text-stroke:6px #0F0A02;color:#0F0A02;-webkit-text-fill-color:#0F0A02}
+h1 .b::before{content:"HEALTH";position:absolute;left:7px;top:9px;z-index:-1;-webkit-text-stroke:6px #FFFFFF;background:none;color:#FFFFFF;-webkit-text-fill-color:#FFFFFF}
+.sub{font-weight:600;font-size:clamp(15px,2vw,22px);max-width:56ch;line-height:1.18;color:#fff}
+.sub b{color:#fff}
+.snap{margin-top:8px;font-weight:600;font-size:13px;color:#6E5C34}
+.snap code{background:rgba(0,0,0,.07);padding:1px 8px;border-radius:7px;font-family:ui-monospace,Menlo,Consolas,monospace}
+details.method{max-width:1280px;margin:20px auto 0;background:rgba(0,0,0,.045);border:3px solid rgba(255,255,255,.45);border-radius:20px;overflow:hidden}
+details.method>summary{cursor:pointer;list-style:none;padding:14px 20px;font-weight:700;font-size:clamp(14px,1.8vw,18px);color:#fff;display:flex;align-items:center;gap:10px;user-select:none}
+details.method>summary::-webkit-details-marker{display:none}
+details.method>summary .mk{color:var(--brand-bright);transition:transform .2s}
+details.method[open]>summary .mk{transform:rotate(90deg)}
+.method-body{padding:2px 20px 20px;color:#fff;font-weight:500;font-size:14px;line-height:1.5}
+.method-body b{color:#fff}
+.method-body .g{display:grid;grid-template-columns:1fr 1fr;gap:8px 26px;margin-top:6px}
+@media (max-width:760px){.method-body .g{grid-template-columns:1fr}}
+.tabs{display:flex;align-items:center;gap:12px;max-width:1280px;margin:22px auto 16px;flex-wrap:wrap}
+.tab{cursor:pointer;font-family:var(--sub);font-weight:800;font-size:clamp(14px,1.7vw,19px);text-transform:uppercase;letter-spacing:.02em;color:var(--ink);border:4px solid var(--ink);border-radius:999px;padding:9px 18px;box-shadow:var(--shadow-sm);transform:rotate(-1deg);transition:transform .16s cubic-bezier(.34,1.6,.5,1),box-shadow .16s,filter .16s;user-select:none;background:#fff}
+.tab .dot{display:inline-block;width:9px;height:9px;border-radius:999px;margin-right:8px;vertical-align:middle}
+.tab .c{background:rgba(0,0,0,.18);border-radius:999px;padding:2px 10px;margin-left:9px;font-size:.82em}
+.tab.crit{background:radial-gradient(rgba(0,0,0,.2) .8px,transparent 1.1px) 0 0/9px 9px, var(--red)} .tab.crit .dot{background:#5a0006}
+.tab.warn{background:radial-gradient(rgba(0,0,0,.2) .8px,transparent 1.1px) 0 0/9px 9px, var(--gold)} .tab.warn .dot{background:#4a3400}
+.tab.supp{background:radial-gradient(rgba(0,0,0,.16) .8px,transparent 1.1px) 0 0/9px 9px, #C9CDD6} .tab.supp .dot{background:#3d4149}
+.tab:hover{transform:rotate(0) translateY(-3px) scale(1.03);box-shadow:var(--shadow)}
+.tab[aria-selected="false"]{filter:grayscale(.6) opacity(.65);box-shadow:3px 3px 0 rgba(10,7,0,.4);transform:rotate(0) scale(.96)}
+.tablewrap{max-width:1280px;margin:0 auto;background:var(--surface);color:var(--ink);border:4px solid var(--ink);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:960px}
+thead th{background:radial-gradient(rgba(0,0,0,.14) .8px,transparent 1.1px) 0 0/9px 9px, var(--brand);color:var(--ink);font-family:var(--sub);font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:11.5px;text-align:left;padding:11px 12px;border-bottom:4px solid var(--ink);white-space:nowrap;position:sticky;top:0}
+thead th.num{text-align:right}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--grid);white-space:nowrap;vertical-align:top;color:var(--ink)}
+tbody tr:nth-child(even) td{background:rgba(239,166,55,.05)}
+tbody tr:hover td{background:rgba(239,166,55,.14)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:600}
+.mono .brand{display:block;font-family:var(--bubbly);font-weight:600;font-size:10.5px;color:var(--muted);letter-spacing:.02em}
+.issuer{white-space:normal;min-width:150px;max-width:210px}
+.dd{white-space:normal;min-width:130px}
+.accept{font-weight:800;font-size:13.5px;text-align:left;font-variant-numeric:tabular-nums}
+.accept.crit{color:var(--red)} .accept.warn{color:var(--gold-deep)} .accept.supp{color:var(--muted)}
+.tier{display:inline-block;font-family:var(--sub);font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:11px;padding:4px 10px;border-radius:999px;color:#fff;border:2px solid rgba(0,0,0,.12)}
+.tier.t-crit{background:var(--red)} .tier.t-warn{background:var(--gold)} .tier.t-supp{background:var(--slate)}
+.shift{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:6px;border-radius:999px;cursor:help;vertical-align:middle;transition:transform .15s cubic-bezier(.34,1.6,.5,1),background .15s,box-shadow .15s}
+.shift .ar{font-size:11px;line-height:1;font-weight:800}
+.shift.good{color:var(--green)} .shift.bad{color:var(--red)} .shift.flat{color:#9C7A2A}
+.shift:hover{transform:scale(1.45);background:currentColor;box-shadow:0 0 9px 1px currentColor}
+.shift:hover .ar{color:#fff}
+#shift-tip{position:fixed;z-index:80;pointer-events:none;background:var(--ink);color:#fff;font-family:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:10.5px;padding:6px 10px;border-radius:9px;box-shadow:4px 5px 0 rgba(10,7,0,.4);white-space:nowrap;max-width:280px;opacity:0;transform:translate(-50%,-100%) translateY(4px);transition:opacity .13s,transform .13s}
+#shift-tip.on{opacity:1;transform:translate(-50%,-100%)}
+#shift-tip::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--ink)}
+.gw{white-space:normal;min-width:250px}
+.gwtag{display:inline-block;font-family:var(--sub);font-weight:800;letter-spacing:.03em;font-size:10.5px;padding:3px 9px;border-radius:7px;border:2px solid currentColor}
+.gwtag.gwiso{color:var(--red);background:rgba(229,72,77,.1)}
+.gwtag.gwsplit{color:var(--gold-deep);background:rgba(217,142,18,.14)}
+.gwtag.gwissuer{color:var(--slate);background:rgba(107,114,128,.12)}
+.gwtag.gwsingle{color:var(--muted);background:rgba(138,117,80,.10)}
+.gwbars{font-size:11.5px;color:#5A4A2C;margin-top:4px;font-variant-numeric:tabular-nums}
+.gwdead{color:var(--red);font-weight:800}
+.gwnote{font-size:10.5px;color:var(--muted);margin-top:2px;white-space:normal;max-width:280px}
+.why{white-space:normal;min-width:170px;max-width:230px;color:#4A3C22;font-size:11.5px}
+#emptymsg{padding:26px;text-align:center;color:var(--muted);font-weight:700;font-family:var(--sub);text-transform:uppercase;letter-spacing:.04em}
+.foot{max-width:1280px;margin:14px auto 0;color:#fff;font-size:11.5px;line-height:1.5}
+.foot b{color:#fff}
+.issuerbtn{font-family:var(--bubbly);font-weight:600;font-size:12.5px;color:var(--ink);background:none;border:0;padding:0;cursor:pointer;text-align:left;transition:color .15s}
+.iname{text-decoration:underline dotted var(--brand-deep);text-decoration-thickness:2px;text-underline-offset:3px}
+.issuerbtn:hover{color:var(--brand-deep)}
+.issuerbtn:hover .iname{text-decoration-color:var(--ink)}
+.grpc{display:inline-block;margin-left:6px;font-family:var(--sub);font-weight:800;font-size:10px;color:#fff;background:var(--brand-deep);border-radius:999px;padding:1px 7px;vertical-align:middle}
+.modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(20,13,2,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;transition:opacity .18s}
+.modal.on{opacity:1}
+.modal[hidden]{display:none}
+.modal-card{position:relative;width:min(640px,100%);max-height:82vh;overflow:auto;background:var(--surface);color:var(--ink);border:4px solid var(--ink);border-radius:22px;box-shadow:var(--shadow);transform:translateY(10px) scale(.98);transition:transform .18s}
+.modal.on .modal-card{transform:none}
+.modal-head{position:sticky;top:0;background:radial-gradient(rgba(0,0,0,.14) .8px,transparent 1.1px) 0 0/9px 9px, var(--brand);border-bottom:4px solid var(--ink);padding:16px 20px}
+.modal-kick{font-family:var(--sub);font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:var(--ink)}
+.modal-head h3{font-family:var(--head);font-weight:400;font-size:21px;margin:4px 0 2px;color:var(--ink);line-height:1.1}
+.modal-head p{font-family:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:12px;color:#5A3F0C}
+.modal-x{position:absolute;top:12px;right:14px;width:30px;height:30px;border-radius:999px;border:3px solid var(--ink);background:#fff;font-size:16px;font-weight:800;line-height:1;cursor:pointer;color:var(--ink);box-shadow:3px 3px 0 rgba(10,7,0,.4)}
+.modal-x:hover{background:var(--brand-bright)}
+.modal-body{padding:12px 18px 20px}
+.mnote{font-family:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:11.5px;color:var(--muted);padding:6px 2px 10px}
+.mrow{display:flex;align-items:center;gap:10px;padding:10px 6px;border-bottom:1px solid var(--grid)}
+.mrow:last-child{border-bottom:0}
+.mrow.cur{background:rgba(239,166,55,.16);border-radius:10px}
+.mbin{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:13px;min-width:74px}
+.mcur-tag{font-family:var(--sub);font-weight:800;font-size:9px;text-transform:uppercase;letter-spacing:.04em;color:var(--brand-deep);margin-left:5px}
+.mbrand{color:var(--muted);font-size:11px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.macc{font-weight:800;font-variant-numeric:tabular-nums;font-size:13px;min-width:50px;text-align:right}
+.macc.crit{color:var(--red)} .macc.warn{color:var(--gold-deep)} .macc.supp{color:var(--muted)}
+.mtier{font-family:var(--sub);font-weight:800;text-transform:uppercase;font-size:10px;color:#fff;padding:3px 9px;border-radius:999px;min-width:74px;text-align:center}
+.mtier.crit{background:var(--red)} .mtier.warn{background:var(--gold)} .mtier.supp{background:var(--slate)}
+.rightbar{margin-left:auto;display:flex;align-items:center;gap:9px}
+.wintoggle{display:inline-flex;border:4px solid var(--ink);border-radius:999px;overflow:hidden;box-shadow:var(--shadow-sm);background:#fff}
+.winbtn{font-family:var(--sub);font-weight:800;font-size:14px;letter-spacing:.02em;color:var(--ink);background:#fff;border:0;padding:8px 15px;cursor:pointer;transition:background .14s}
+.winbtn+.winbtn{border-left:3px solid var(--ink)}
+.winbtn[aria-pressed="true"]{background:radial-gradient(rgba(0,0,0,.16) .8px,transparent 1.1px) 0 0/9px 9px, var(--brand)}
+@media (max-width:620px){.rightbar{margin:8px 0 0;width:100%}}
+#loader{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;gap:14px;background:var(--bg);transition:opacity .4s}
+#loader.hide{opacity:0;pointer-events:none}
+#loader .d{width:20px;height:20px;border-radius:999px;background:var(--ink);border:3px solid var(--ink);box-shadow:var(--shadow-sm);animation:bnc 1s infinite ease-in-out}
+#loader .d:nth-child(2){background:#fff;animation-delay:.16s}
+#loader .d:nth-child(3){animation-delay:.32s}
+@keyframes bnc{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-20px)}}
+</style>
+
+<div id="loader"><span class="d"></span><span class="d"></span><span class="d"></span></div>
+<div class="wrap">
+  <span class="kicker">Pay-in · card acceptance</span>
+  <h1><span class="a">BIN</span> <span class="b">HEALTH</span></h1>
+  <p class="sub">Card BINs whose first-attempt acceptance is anomalously low — <b>the customer's card can't fund the transfer</b>. Split by <b>gateway/PSP</b> so a single dead payment route doesn't read as an issuer problem.</p>
+  <p class="snap" id="snap"></p>
+  <details class="method"><summary><span class="mk">▸</span> how to read this</summary>
+    <div class="method-body"><div class="g">
+      <div><b>CRITICAL</b> — accept ≤5%: dead BIN, effectively nothing funds. Dominant decline shows the share — a 2nd reason when the top one is under 69%, a 3rd when the top two are under 80%.</div>
+      <div><b>WARN</b> — accept &lt;60% with issuer-restriction the dominant decline.</div>
+      <div><b>Suppressed · not BIN</b> — flagged low but the dominant decline is NSF / 3DS / fraud-block / generic: not BIN-health.</div>
+      <div><b>Window (90 / 30 / 10d)</b> — trailing window, toggled top-right. The eligibility volume floor scales with it (≈1,000 → ~333 → ~111 first-attempts) so genuinely-dead low-volume BINs still flag in the short windows. The <b>arrow by Accept</b> shows the point change vs the next-larger window (30d vs 90d, 10d vs 30d).</div>
+      <div style="grid-column:1/-1"><b>Gateway split</b> — every attempt routes through one gateway/PSP. <b>GATEWAY-ISOLATED</b>: one door dead, others work → route to PSP/routing. <b>GATEWAY-SPLIT</b>: acceptance diverges by door. <b>ALL GATES DOWN</b>: low on every door → genuine BIN health (not one bad route). <b>SINGLE-GATEWAY</b>: only one door has enough volume to judge. <b>Click any issuer</b> for the other BINs failing under that issuer × country.</div>
+    </div></div>
+  </details>
+  <div class="tabs" role="tablist">
+    <button class="tab crit" role="tab" data-tier="crit" aria-selected="false"><span class="dot"></span>Critical<span class="c" id="c-crit">0</span></button>
+    <button class="tab warn" role="tab" data-tier="warn" aria-selected="false"><span class="dot"></span>Warn (issuer)<span class="c" id="c-warn">0</span></button>
+    <button class="tab supp" role="tab" data-tier="supp" aria-selected="false"><span class="dot"></span>Warn (other)<span class="c" id="c-supp">0</span></button>
+    <span class="rightbar"><span class="wintoggle" role="group" aria-label="measuring window">
+      <button class="winbtn" data-win="90" aria-pressed="true">90d</button>
+      <button class="winbtn" data-win="30" aria-pressed="false">30d</button>
+      <button class="winbtn" data-win="10" aria-pressed="false">10d</button>
+    </span></span>
+  </div>
+  <div class="tablewrap"><div class="scroll"><table>
+    <thead><tr>
+      <th>Tier</th><th>Send country</th><th>BIN</th><th>Issuer</th>
+      <th class="num">1st-att</th><th>Accept%</th><th>Dominant decline</th>
+      <th class="num">IR share</th><th>Gateway split</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody></table></div>
+    <div id="emptymsg" style="display:none"></div>
+  </div>
+  <p class="foot"><b>Rule.</b> first-attempt accept &lt;60% over the selected window, first_attempts ≥ the window's scaled floor (≈1,000 at 90d · ~333 at 30d · ~111 at 10d), excl 'Other'; CRITICAL if accept ≤5% (dead), WARN if issuer-restriction dominant; fraud-block / NSF / 3DS / generic suppressed (not BIN-health) · BIN / issuer / country are operational identifiers, not customer PII.</p>
+</div>
+<div id="modal" class="modal" hidden>
+  <div class="modal-card">
+    <button class="modal-x" id="modalx" aria-label="close">×</button>
+    <div class="modal-head"><span class="modal-kick">Issuer × country · flagged BINs</span>
+      <h3 id="modal-title"></h3><p id="modal-sub"></p></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+<div id="shift-tip"></div>
+
+<script>
+(function(){
+  var FLAG=60, CRIT=5, MIN_BANK_1=200;
+  var IR="Issuer restriction (true BIN health)", FRAUD="Remitly risk/fraud block";
+  var WINS=["90","30","10"], BASE={"30":"90","10":"30"};
+
+  // ---- sample fallback so this renders outside Mode; Mode supplies the real datasets ----
+  var SAMPLE=[
+    {window_days:90,bin:"411111",send_country:"Belgium",issuer:"bank 16",brand:"MasterCard",first_attempts:3109,accept_pct:3.6,declines:'{\"Issuer restriction (true BIN health)\":1798,\"3DS / auth abandonment\":749,\"Insufficient funds / limit\":449}'},
+    {window_days:90,bin:"424242",send_country:"Belgium",issuer:"bank 16",brand:"MasterCard",first_attempts:1089,accept_pct:3.7,declines:'{\"Issuer restriction (true BIN health)\":628,\"3DS / auth abandonment\":262,\"Insufficient funds / limit\":157}'},
+    {window_days:90,bin:"431111",send_country:"Romania",issuer:"bank 9",brand:"MasterCard",first_attempts:57617,accept_pct:40.9,declines:'{\"Issuer restriction (true BIN health)\":20430,\"3DS / auth abandonment\":8512,\"Insufficient funds / limit\":5107}'},
+    {window_days:90,bin:"511111",send_country:"United Kingdom",issuer:"bank 17",brand:"Visa",first_attempts:2038,accept_pct:0.0,declines:'{\"Issuer restriction (true BIN health)\":1222,\"3DS / auth abandonment\":509,\"Insufficient funds / limit\":305}'},
+    {window_days:90,bin:"522222",send_country:"Germany",issuer:"bank 19",brand:"Visa",first_attempts:1509,accept_pct:6.8,declines:'{\"Issuer restriction (true BIN health)\":843,\"3DS / auth abandonment\":351,\"Insufficient funds / limit\":210}'},
+    {window_days:90,bin:"555555",send_country:"United States of America",issuer:"bank 18",brand:"MasterCard",first_attempts:76046,accept_pct:24.1,declines:'{\"Issuer restriction (true BIN health)\":34630,\"3DS / auth abandonment\":14429,\"Insufficient funds / limit\":8657}'},
+    {window_days:90,bin:"400000",send_country:"United Arab Emirates",issuer:"bank 21",brand:"Visa",first_attempts:610,accept_pct:0.0,declines:'{\"Issuer restriction (true BIN health)\":366,\"3DS / auth abandonment\":152,\"Insufficient funds / limit\":91}'},
+    {window_days:30,bin:"411111",send_country:"Belgium",issuer:"bank 16",brand:"MasterCard",first_attempts:1057,accept_pct:3.6,declines:'{\"Issuer restriction (true BIN health)\":610,\"3DS / auth abandonment\":254,\"Insufficient funds / limit\":152}'},
+    {window_days:30,bin:"424242",send_country:"Belgium",issuer:"bank 16",brand:"MasterCard",first_attempts:370,accept_pct:3.7,declines:'{\"Issuer restriction (true BIN health)\":213,\"3DS / auth abandonment\":89,\"Insufficient funds / limit\":53}'},
+    {window_days:30,bin:"431111",send_country:"Romania",issuer:"bank 9",brand:"MasterCard",first_attempts:19589,accept_pct:40.9,declines:'{\"Issuer restriction (true BIN health)\":6946,\"3DS / auth abandonment\":2894,\"Insufficient funds / limit\":1736}'},
+    {window_days:30,bin:"511111",send_country:"United Kingdom",issuer:"bank 17",brand:"Visa",first_attempts:692,accept_pct:0.0,declines:'{\"Issuer restriction (true BIN health)\":415,\"3DS / auth abandonment\":173,\"Insufficient funds / limit\":103}'},
+    {window_days:30,bin:"522222",send_country:"Germany",issuer:"bank 19",brand:"Visa",first_attempts:513,accept_pct:6.8,declines:'{\"Issuer restriction (true BIN health)\":286,\"3DS / auth abandonment\":119,\"Insufficient funds / limit\":71}'},
+    {window_days:30,bin:"555555",send_country:"United States of America",issuer:"bank 18",brand:"MasterCard",first_attempts:25855,accept_pct:24.1,declines:'{\"Issuer restriction (true BIN health)\":11773,\"3DS / auth abandonment\":4905,\"Insufficient funds / limit\":2943}'},
+    {window_days:30,bin:"400000",send_country:"United Arab Emirates",issuer:"bank 21",brand:"Visa",first_attempts:207,accept_pct:0.0,declines:'{\"Issuer restriction (true BIN health)\":124,\"3DS / auth abandonment\":51,\"Insufficient funds / limit\":31}'},
+    {window_days:10,bin:"411111",send_country:"Belgium",issuer:"bank 16",brand:"MasterCard",first_attempts:341,accept_pct:3.6,declines:'{\"Issuer restriction (true BIN health)\":196,\"3DS / auth abandonment\":82,\"Insufficient funds / limit\":49}'},
+    {window_days:10,bin:"424242",send_country:"Belgium",issuer:"bank 16",brand:"MasterCard",first_attempts:119,accept_pct:3.7,declines:'{\"Issuer restriction (true BIN health)\":68,\"3DS / auth abandonment\":28,\"Insufficient funds / limit\":17}'},
+    {window_days:10,bin:"431111",send_country:"Romania",issuer:"bank 9",brand:"MasterCard",first_attempts:6337,accept_pct:40.9,declines:'{\"Issuer restriction (true BIN health)\":2247,\"3DS / auth abandonment\":936,\"Insufficient funds / limit\":561}'},
+    {window_days:10,bin:"511111",send_country:"United Kingdom",issuer:"bank 17",brand:"Visa",first_attempts:224,accept_pct:0.0,declines:'{\"Issuer restriction (true BIN health)\":134,\"3DS / auth abandonment\":56,\"Insufficient funds / limit\":33}'},
+    {window_days:10,bin:"522222",send_country:"Germany",issuer:"bank 19",brand:"Visa",first_attempts:165,accept_pct:6.8,declines:'{\"Issuer restriction (true BIN health)\":91,\"3DS / auth abandonment\":38,\"Insufficient funds / limit\":22}'},
+    {window_days:10,bin:"555555",send_country:"United States of America",issuer:"bank 18",brand:"MasterCard",first_attempts:8365,accept_pct:24.1,declines:'{\"Issuer restriction (true BIN health)\":3809,\"3DS / auth abandonment\":1587,\"Insufficient funds / limit\":952}'},
+    {window_days:10,bin:"400000",send_country:"United Arab Emirates",issuer:"bank 21",brand:"Visa",first_attempts:67,accept_pct:0.0,declines:'{\"Issuer restriction (true BIN health)\":40,\"3DS / auth abandonment\":16,\"Insufficient funds / limit\":10}'}
+  ];
+
+  function modeRows(){
+    try{
+      var dss=window.datasets;
+      if(dss&&dss.length){
+        for(var i=0;i<dss.length;i++){var c=dss[i]&&dss[i].content;if(c&&c.length&&('window_days' in c[0]))return {rows:c,live:true};}
+        if(dss[0]&&dss[0].content&&dss[0].content.length)return {rows:dss[0].content,live:true};
+      }
+    }catch(e){}
+    return {rows:SAMPLE,live:false};
+  }
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function parse(s){ if(typeof s==='object'&&s)return s; try{return JSON.parse(s||'{}');}catch(e){return {};} }
+  function r1(x){return Math.round(x*10)/10;}
+
+  var src=modeRows(), raw=src.rows;
+  // Mode injects the report's last run time via Liquid. If your Mode build uses a different
+  // field, change {{ run.completed_at }} below (e.g. {{ report.last_run_finished_at }}).
+  var MODE_RUN="{{ run.completed_at }}";
+  function fmtRun(){var t=MODE_RUN;if(!t||t.indexOf('{')!==-1)t=null;var d=t?new Date(t):new Date();if(isNaN(d.getTime()))d=new Date();return d.toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});}
+  document.getElementById('snap').innerHTML = src.live
+    ? 'Last refreshed <code>'+fmtRun()+'</code> · window <b>90 / 30 / 10d</b> toggles at right'
+    : 'Preview sample — connect the Mode query to go live · window <b>90 / 30 / 10d</b> toggles at right';
+
+  var byWin={"90":[],"30":[],"10":[]};
+  raw.forEach(function(r){
+    var w=String(r.window_days); if(!byWin[w])return;
+    byWin[w].push({bin:String(r.bin),country:r.send_country,issuer:r.issuer||'',brand:r.brand||'',
+      fa:+r.first_attempts,acc:+r.accept_pct,declines:parse(r.declines),gateways:parse(r.gateways)});
+  });
+
+  function gatewayVerdict(bars,minGw){
+    var qual=bars.filter(function(r){return r[1]>=minGw;});
+    function bl(rs){var a=0,s=0;rs.forEach(function(r){a+=r[1];s+=r[2];});return a?r1(100*s/a):0;}
+    if(qual.length<=1){var only=qual[0]?qual[0][0]:'none';return{v:"SINGLE-GATEWAY",cls:"gwsingle",dead:[],note:"only one gateway above "+minGw+" first-attempts ("+only+") — can't isolate a route; read as a BIN-level flag"};}
+    var dead=qual.filter(function(r){return r[3]<=CRIT;}),live=qual.filter(function(r){return r[3]>CRIT;});
+    var best=qual.reduce(function(a,b){return b[3]>a[3]?b:a;}),worst=qual.reduce(function(a,b){return b[3]<a[3]?b:a;});
+    if(dead.length&&live.length){var it=bl(live);return{v:"GATEWAY-ISOLATED",cls:"gwiso",dead:dead.map(function(r){return r[0];}),note:"dead on "+dead.map(function(r){return r[0]+" "+r[3]+"%";}).join(", ")+"; issuer ~"+it+"% on "+live.map(function(r){return r[0];}).join("/")+" — route to PSP/routing, not issuer"};}
+    if(!live.length)return{v:"ALL GATES DOWN",cls:"gwissuer",dead:qual.map(function(r){return r[0];}),note:"dead across all gateways ("+qual.map(function(r){return r[0];}).join("/")+")"};
+    if(best[3]>=FLAG&&worst[3]<FLAG)return{v:"GATEWAY-SPLIT",cls:"gwsplit",dead:[],note:"acceptance splits by gateway: "+best[0]+" "+best[3]+"% vs "+worst[0]+" "+worst[3]+"% — worth a routing look"};
+    return{v:"ALL GATES DOWN",cls:"gwissuer",dead:[],note:"uniformly degraded across gateways ("+qual.map(function(r){return r[0]+" "+r[3]+"%";}).join(", ")+") — not a single-route issue"};
+  }
+  function classify(b,w){
+    var minGw=Math.max(1,Math.round(MIN_BANK_1*w/90));
+    var d=b.declines,total=0,dom=null,domn=-1,ir=0;
+    for(var k in d){total+=d[k];if(k===IR)ir=d[k];if(d[k]>domn){domn=d[k];dom=k;}}
+    if(dom===null)dom="(no declines)";
+    b.ir=total?r1(100*ir/total):0;b.dominant=dom;
+    var srt=Object.keys(d).map(function(k){return [k,d[k]];}).sort(function(a,b){return b[1]-a[1];});
+    function cl(x){return x.replace(' (true BIN health)','');}
+    if(total&&srt.length){var c1=srt[0][1];b.domParts=[cl(srt[0][0])+": "+Math.round(100*c1/total)+"%"];
+      if(c1/total<0.69&&srt.length>1){var c2=srt[1][1];b.domParts.push(cl(srt[1][0])+": "+Math.round(100*c2/total)+"%");
+        if((c1+c2)/total<0.80&&srt.length>2)b.domParts.push(cl(srt[2][0])+": "+Math.round(100*srt[2][1]/total)+"%");}}
+    else b.domParts=["(no declines)"];
+    if(dom===FRAUD){b.tier="supp";b.tlab="SUPPRESSED";b.why="dominant decline is a Remitly risk/fraud block — route to RISK, not BIN-health";}
+    else if(b.acc<=CRIT){b.tier="crit";b.tlab="CRITICAL";b.why="dead BIN — "+b.acc+"% first-attempt acceptance, effectively nothing funds";}
+    else if(dom===IR){b.tier="warn";b.tlab="WARN";b.why="degraded acceptance, issuer-restriction dominant";}
+    else{b.tier="supp";b.tlab="SUPPRESSED";b.why="dominant decline is '"+dom+"' — customer/UX/processor-side, not a broken BIN";}
+    var bars=[];for(var g in b.gateways){var a=b.gateways[g][0],s=b.gateways[g][1];bars.push([g,a,s,a?r1(100*s/a):0]);}
+    bars.sort(function(x,y){return y[1]-x[1];});b.bars=bars;b.gv=gatewayVerdict(bars,minGw);
+  }
+
+  var META={};
+  WINS.forEach(function(w){
+    var arr=byWin[w]||[];arr.forEach(function(b){classify(b,+w);});
+    var fired=arr.filter(function(b){return b.tier!=="supp";}),supp=arr.filter(function(b){return b.tier==="supp";});
+    fired.sort(function(a,b){var ca=a.tier==="crit"?0:1,cb=b.tier==="crit"?0:1;return ca-cb||b.fa-a.fa;});
+    supp.sort(function(a,b){return b.fa-a.fa;});
+    var all=fired.concat(supp),gi={},gd=[],am={};
+    all.forEach(function(b){var k=b.issuer+"|"+b.country;if(!(k in gi)){gi[k]=gd.length;gd.push({issuer:b.issuer,country:b.country,bins:[]});}b.gid=gi[k];gd[gi[k]].bins.push({bin:b.bin,brand:b.brand,accept:b.acc,tier:b.tier,verdict:b.gv.v});am[b.bin+"|"+b.country]=b.acc;});
+    META[w]={all:all,crit:fired.filter(function(b){return b.tier==="crit";}).length,warn:fired.filter(function(b){return b.tier==="warn";}).length,supp:supp.length,groups:gd,acc:am};
+  });
+
+  var curWin=(document.querySelector('.winbtn[aria-pressed="true"]')||{dataset:{win:"90"}}).dataset.win,curTier="crit";
+  function accDelta(b,w){
+    var base=BASE[w];if(!base||!META[base])return "";
+    var prev=META[base].acc[b.bin+"|"+b.country],cls,ar,tip;
+    if(prev===undefined){cls="flat";ar="·";tip="new vs "+base+"d — not flagged then";}
+    else{var d=r1(b.acc-prev);if(d>0){cls="good";ar="▲";tip="+"+d+"% vs "+base+"d (was "+prev+"%)";}else if(d<0){cls="bad";ar="▼";tip="−"+Math.abs(d)+"% vs "+base+"d (was "+prev+"%)";}else{cls="flat";ar="–";tip="no change vs "+base+"d ("+prev+"%)";}}
+    return '<span class="shift '+cls+'" data-tip="'+esc(tip)+'"><span class="ar">'+ar+'</span></span>';
+  }
+  function gwCell(b){
+    var bars=b.bars.map(function(r){return r[3]<=CRIT?'<span class="gwdead">'+esc(r[0])+' '+r[3]+'%</span>':esc(r[0])+' '+r[3]+'%';}).join(' · ');
+    return '<span class="gwtag '+b.gv.cls+'">'+esc(b.gv.v)+'</span><div class="gwbars">'+bars+'</div><div class="gwnote">'+esc(b.gv.note)+'</div>';
+  }
+  function rowHtml(b,w){
+    var n=META[w].groups[b.gid].bins.length,badge=n>1?'<span class="grpc">'+n+'</span>':'';
+    var brand=b.brand?'<span class="brand">'+esc(b.brand)+'</span>':'';
+    return '<tr data-tier="'+b.tier+'">'
+      +'<td><span class="tier t-'+b.tier+'">'+b.tlab+'</span></td>'
+      +'<td>'+esc(b.country)+'</td>'
+      +'<td class="mono">'+esc(b.bin)+brand+'</td>'
+      +'<td class="issuer"><button class="issuerbtn" data-gid="'+b.gid+'" data-bin="'+esc(b.bin)+'"><span class="iname">'+esc(b.issuer||'(unknown issuer)')+'</span>'+badge+'</button></td>'
+      +'<td class="num">'+b.fa.toLocaleString()+'</td>'
+      +'<td class="accept '+b.tier+'">'+b.acc+'%'+accDelta(b,w)+'</td>'
+      +'<td class="dd">'+b.domParts.map(esc).join('<br>')+'</td>'
+      +'<td class="num">'+b.ir+'%</td>'
+      +'<td class="gw">'+gwCell(b)+'</td></tr>';
+  }
+  var tabs=[].slice.call(document.querySelectorAll('.tab')),wins=[].slice.call(document.querySelectorAll('.winbtn'));
+  var cEl={crit:document.getElementById('c-crit'),warn:document.getElementById('c-warn'),supp:document.getElementById('c-supp')},empty=document.getElementById('emptymsg');
+  function render(){
+    tabs.forEach(function(t){t.setAttribute('aria-selected',String(t.dataset.tier===curTier));});
+    wins.forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.win===curWin));});
+    var m=META[curWin]||{all:[],crit:0,warn:0,supp:0};
+    cEl.crit.textContent=m.crit;cEl.warn.textContent=m.warn;cEl.supp.textContent=m.supp;
+    var body=m.all.filter(function(b){return b.tier===curTier;});
+    document.getElementById('tbody').innerHTML=body.map(function(b){return rowHtml(b,curWin);}).join('');
+    empty.style.display=body.length?'none':'';
+    empty.textContent='No '+({crit:'CRITICAL',warn:'WARN (ISSUER)',supp:'WARN (OTHER)'}[curTier]||curTier)+' BINs in the '+curWin+'-day window.';
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){curTier=t.dataset.tier;render();});});
+  wins.forEach(function(b){b.addEventListener('click',function(){curWin=b.dataset.win;render();});});
+
+  // issuer modal
+  var TLAB={crit:'CRITICAL',warn:'WARN',supp:'SUPPRESSED'},modal=document.getElementById('modal');
+  function openModal(gid,bin){
+    var g=((META[curWin]||{}).groups||[])[gid];if(!g)return;
+    document.getElementById('modal-title').textContent=g.issuer||'(unknown issuer)';
+    document.getElementById('modal-sub').textContent=g.country+' · '+curWin+'-day window · '+g.bins.length+' BIN'+(g.bins.length!==1?'s':'')+' flagged';
+    var others=g.bins.length-1;
+    var list=g.bins.slice().sort(function(a,b){return a.accept-b.accept;}).map(function(b){
+      var cur=b.bin===bin;
+      return '<div class="mrow'+(cur?' cur':'')+'"><span class="mbin">'+esc(b.bin)+(cur?'<span class="mcur-tag">this</span>':'')+'</span>'
+        +'<span class="mbrand">'+esc(b.brand||'')+(b.brand?' · ':'')+esc(b.verdict)+'</span>'
+        +'<span class="macc '+b.tier+'">'+b.accept+'%</span><span class="mtier '+b.tier+'">'+(TLAB[b.tier]||b.tier)+'</span></div>';
+    }).join('');
+    var note=others<1?'<div class="mnote">No other BINs flagged under this issuer × country in this window.</div>':'<div class="mnote">'+others+' other BIN'+(others!==1?'s':'')+' flagged here</div>';
+    document.getElementById('modal-body').innerHTML=note+list;
+    modal.hidden=false;requestAnimationFrame(function(){modal.classList.add('on');});
+  }
+  function closeModal(){modal.classList.remove('on');setTimeout(function(){modal.hidden=true;},180);}
+  document.querySelector('.tablewrap').addEventListener('click',function(ev){var b=ev.target.closest('.issuerbtn');if(b)openModal(+b.dataset.gid,b.dataset.bin);});
+  document.getElementById('modalx').addEventListener('click',closeModal);
+  modal.addEventListener('click',function(ev){if(ev.target===modal)closeModal();});
+  document.addEventListener('keydown',function(ev){if(ev.key==='Escape'&&!modal.hidden)closeModal();});
+
+  // shift tooltip
+  var tip=document.getElementById('shift-tip'),tw=document.querySelector('.tablewrap');
+  tw.addEventListener('mouseover',function(ev){var s=ev.target.closest('.shift');if(!s)return;var r=s.getBoundingClientRect();tip.textContent=s.getAttribute('data-tip')||'';tip.style.left=(r.left+r.width/2)+'px';tip.style.top=(r.top-6)+'px';tip.classList.add('on');});
+  tw.addEventListener('mouseout',function(ev){if(ev.target.closest('.shift'))tip.classList.remove('on');});
+  window.addEventListener('scroll',function(){tip.classList.remove('on');},true);
+
+  render();
+  setTimeout(function(){var l=document.getElementById('loader');if(l)l.classList.add('hide');},550);
+})();
+</script>
+
+<div id="preview-banner">
+  <b>PREVIEW — synthetic data.</b>
+  Partner, bank and issuer names are placeholders; card BINs are non-routable test
+  numbers; every transaction reference is masked. Connect this cell to its Mode query
+  to see live data.
+</div>
+<script id="preview-banner-js">
+(function(){
+  // Hide the notice the moment real Mode data is present.
+  function live(){
+    try{
+      var d = window.datasets;
+      if(d && d.length){
+        for(var i=0;i<d.length;i++){
+          var c = d[i] && d[i].content;
+          if(c && c.length) return true;
+        }
+      }
+    }catch(e){}
+    return false;
+  }
+  function apply(){
+    var b = document.getElementById('preview-banner');
+    if(b && live()) b.style.display='none';
+  }
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+  setTimeout(apply, 800);
+})();
+</script>
